@@ -23,6 +23,13 @@
 
 
 // MIDI Pin Out
+//        ------- 
+//      /    2    \
+//     /  5      4 \
+//     | 3        1 |
+//      \          /
+//       \ __**__ /
+        
 // Pin No.  IN Signal name  THRU Signal name  Out Signal name
 // 1        No Connect      No Connect        No Connect
 // 2        No Connect      Shield            Shield
@@ -32,10 +39,11 @@
 
 
 // MIDI standard: 31250 baud, 1 start bit, 8 data, no parity, 1 stop bit. 
+//
 // On the transmit side:
 // the logic-level output from the transmitting device's UART goes to (typically) an open-collector transistor 
 // driver, the other side of the output being a resistor-limited power feed from +Ve in the sending device.
-
+//
 // On the receive side:
 // an opto-coupler takes in the open-collector drive from the remote device and converts it back to logic level 
 // for the input of the UART.
@@ -44,42 +52,121 @@
 // at each receiving end of the link, and eliminates hum-loops which might arise if there were two separate ground
 // connections between the two items of equipment (one for the audio, and one for the comms data).
 
+const byte MIDIvolume = 17;
+
 
 // Serial port communicates on digital pins 0 (RX) and 1 (TX) as well as with the computer via USB. 
 // Thus, since we use these functions, we cannot also use pins 0 and 1 for digital input or output.
 
+#include <MIDI.h>
+#include <LiquidCrystal.h>
 
-long    baudRate       = 31250; // The MIDI Baud Rate
-int     maxLen         = 200;   // Maximum input string length
-byte    inputString[200];       // A string to hold incoming data
-boolean stringComplete = false; // Whether the string is complete
-int     iPos;                   // The current position in the receiving buffer
-byte    podAddress     = 0;     // This is the MIDI address #1 (the POD default)
+//The circuit:(ATTENTION max contrast is when VO is ground !)
 
+// * LCD RS pin to digital pin 12
+// * LCD Enable pin to digital pin 11
+// * LCD D4 pin to digital pin 5
+// * LCD D5 pin to digital pin 4
+// * LCD D6 pin to digital pin 3
+// * LCD D7 pin to digital pin 2
+// * LCD R/W pin to ground
+// * LCD VSS pin to ground
+// * LCD VCC pin to 5V
+// * 10K potentiometer:
+// *   ends to +5V and ground
+// *   wiper to LCD VO pin (pin 3)
+//
+// initialize the LCD library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+//
+const int rs = 12;
+const int en = 11;
+const int d4 = 5;
+const int d5 = 4;
+const int d6 = 3;
+const int d7 = 2;
+
+LiquidCrystal LCD(rs, en, d4, d5, d6, d7);
+
+
+MIDI_CREATE_DEFAULT_INSTANCE();
+byte    podAddress     = 1;// This is the MIDI address #1 (the POD default)                                               
+
+
+// This function will be automatically called when a
+// ControlChange is received.
+void
+handleControlChange(byte channel, byte number, byte value) {
+    if(channel != podAddress)
+        return;// We don't act as MIDI thru
+    if(number == MIDIvolume) {// Channel Volume
+        LCD.setCursor(5, 1);
+        LCD.print("   ");
+        LCD.setCursor(5, 1);
+        LCD.print(value);
+        return;  
+    }
+    LCD.setCursor(5, 2);
+    LCD.print("   ");
+    LCD.setCursor(5, 2);
+    LCD.print(number);
+    LCD.setCursor(15, 2);
+    LCD.print("   ");
+    LCD.setCursor(15, 2);
+    LCD.print(value);
+}
+
+
+// This function will be automatically called when a
+// ProgramChange is received.
+void
+handleProgramChange(byte channel, byte number) {
+    if(channel != podAddress)
+        return;// We don't act as MIDI thru
+    LCD.setCursor(5, 0);
+    LCD.print("   ");
+    LCD.setCursor(5, 0);
+    LCD.print(number);
+}
+
+
+void
+handleSysEx(byte *array, unsigned size) {
+    LCD.setCursor(0, 3);
+    LCD.print("   ");
+    LCD.setCursor(0, 3);
+    LCD.print(size);
+}
 
 void 
 setup() {
-  Serial.begin(baudRate, SERIAL_8N1); // 8 data bits, no parity, one stop bit.
+    // set up the LCD
+    LCD.begin(20, 4);// Number of Columns and Rows:
+    
+    // Print the headers to the LCD. 
+    LCD.setCursor(0, 0);// LCD.setCursor(col, row)   
+    LCD.print("Pgm:");
+    LCD.setCursor(0, 1);
+    LCD.print("Vol:");
+    LCD.setCursor(0, 2);
+    LCD.print("CCn:");
+    LCD.setCursor(10, 2);
+    LCD.print("Val:");
+    
+    // Connect the handleControlChange function to the library.
+    // It will be called upon reception of a ControlChange.
+    MIDI.setHandleControlChange(handleControlChange);
+    // Connect the handleProgramChange function to the library.
+    // It will be called upon reception of a ProgramChange.
+    MIDI.setHandleProgramChange(handleProgramChange);
+    MIDI.setHandleSystemExclusive(handleSysEx);
+    MIDI.begin();
 }
-
-
-// SerialEvent occurs whenever a new data comes in the hardware serial RX.
-// This routine is run between each time loop() runs, so using delay inside loop can delay response.
-// Multiple bytes of data may be available.
-void 
-serialEvent() {
-  while(Serial.available()) {
-    byte inChar = (byte)Serial.read();
-    inputString[iPos++] = inChar;
-    if (inChar == EOS || iPos == maxLen) {
-      stringComplete = true;
-    }
-  }
-}
-
 
 
 void 
 loop() {
-  serialEvent(); //call the function
+    // Call MIDI.read the fastest you can
+    // for real-time performance.
+    MIDI.read();
 }
