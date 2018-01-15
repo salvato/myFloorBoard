@@ -52,7 +52,8 @@
 // at each receiving end of the link, and eliminates hum-loops which might arise if there were two separate ground
 // connections between the two items of equipment (one for the audio, and one for the comms data).
 
-const byte MIDIvolume = 17;
+// MIDI CC for POD v2
+const byte MIDIvolume = 7;
 const byte MIDIwha    = 4;
 
 
@@ -60,6 +61,7 @@ const byte MIDIwha    = 4;
 // Thus, since we use these functions, we cannot also use pins 0 and 1 for digital input or output.
 
 #include <MIDI.h>
+#include <midi_Defs.h>
 #include <LiquidCrystal.h>
 
 //The circuit:(ATTENTION max contrast is when VO is ground !)
@@ -76,7 +78,7 @@ const byte MIDIwha    = 4;
 // * 10K potentiometer:
 // *   ends to +5V and ground
 // *   wiper to LCD VO pin (pin 3)
-//
+
 // initialize the LCD library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
 //
@@ -103,8 +105,14 @@ const int WhaSw  = 10;// Wha On-Off
 const int WhaSt  = 13;// Wha Status Led
 const int WhaVal = A2;
 const int Volume = A3;
-//
+
+const byte podAddress     = 1;// This is the MIDI address #1 (the POD default)
+
+// Used variables
+int  input;                                                 
+
 // PedalBoard Status Values
+//
 int statusChanA  = HIGH;
 int statusChanB  = HIGH;
 int statusChanC  = HIGH;
@@ -112,44 +120,36 @@ int statusChanD  = HIGH;
 int statusBankUp = HIGH;
 int statusBankDn = HIGH;
 int statusWhaSw  = HIGH;// Wha On-Off
-int statusWhaSt  = HIGH;// Wha Status Led
+int statusWhaSt  = LOW; // Wha Status Led
 int statusWhaVal = 0;
 int statusVolume = 0;
 int currentBank  = 0;
 int currentChan  = 1;
 
-
+// Create the used objects 
 LiquidCrystal LCD(rs, en, d4, d5, d6, d7);
-
-
 MIDI_CREATE_DEFAULT_INSTANCE();
-byte podAddress     = 1;// This is the MIDI address #1 (the POD default)
-int  input;                                                 
 
-// This function will be automatically called when a
-// ControlChange is received.
 void
 handleControlChange(byte channel, byte number, byte value) {
     if(number == MIDIvolume) {// Channel Volume
-        LCD.setCursor(5, 1);
+        LCD.setCursor(12, 0);
         LCD.print("   ");
-        LCD.setCursor(5, 1);
+        LCD.setCursor(12, 0);
         LCD.print(value);
         return;  
     }
-    LCD.setCursor(5, 2);
+    LCD.setCursor(4, 1);
     LCD.print("   ");
-    LCD.setCursor(5, 2);
+    LCD.setCursor(4, 1);
     LCD.print(number);
-    LCD.setCursor(15, 2);
+    LCD.setCursor(12, 1);
     LCD.print("   ");
-    LCD.setCursor(15, 2);
+    LCD.setCursor(12, 1);
     LCD.print(value);
 }
 
 
-// This function will be automatically called when a
-// ProgramChange is received.
 void
 handleProgramChange(byte channel, byte number) {
     LCD.setCursor(5, 0);
@@ -172,14 +172,17 @@ void
 setupLCD() {
     // set up the LCD
     LCD.begin(20, 4);// Number of Columns and Rows:
+    
     // Print the headers to the LCD. 
     LCD.setCursor(0, 0);// LCD.setCursor(col, row)   
     LCD.print("Pgm:");
-    LCD.setCursor(0, 1);
+    LCD.print(currentBank+currentChan);
+    LCD.setCursor(8, 0);
     LCD.print("Vol:");
-    LCD.setCursor(0, 2);
+    LCD.print(statusVolume);
+    LCD.setCursor(0, 1);
     LCD.print("CCn:");
-    LCD.setCursor(10, 2);
+    LCD.setCursor(8, 1);
     LCD.print("Val:");
 }
 
@@ -197,8 +200,9 @@ setupPedalBoard() {
     pinMode(WhaSt,  OUTPUT);      // Wha Status Led (same pin as the internal Led)
     pinMode(WhaVal, INPUT);       // Wha Potentiometer
     pinMode(Volume, INPUT);       // Volume Potentiometer
-    statusVolume = analogRead(Volume >> 3);
-    statusWhaVal = analogRead(WhaVal >> 3);
+    statusVolume = analogRead(Volume) >> 3;
+    statusWhaVal = analogRead(WhaVal) >> 3;
+    digitalWrite(WhaSt, statusWhaSt);
 }
 
 
@@ -207,15 +211,15 @@ setupMIDI() {
     MIDI.setHandleControlChange(handleControlChange);
     MIDI.setHandleProgramChange(handleProgramChange);
     MIDI.setHandleSystemExclusive(handleSysEx);
+    MIDI.turnThruOff();
     MIDI.begin(podAddress);
-  
 }
 
 
 void 
 setup() {
-    setupLCD();
     setupPedalBoard();
+    setupLCD();
     setupMIDI();
 }
 
@@ -276,24 +280,35 @@ loop() {
             MIDI.sendProgramChange(currentBank+currentChan, podAddress);
         }
     }
-    // Wha
+    /* Wha
     input = digitalRead(WhaSw);
     if(input != statusWhaSw) {
         statusWhaSw = input;
-        if(input == LOW) {
-            if(statusWhaSt == HIGH)
+        if(input == LOW) {// High to LOW transition
+            if(statusWhaSt == HIGH)// Toggle the wha status
                 statusWhaSt = LOW;
             else
                 statusWhaSt = HIGH;
-            digitalWrite(WhaSt, statusWhaSt);
         }
     }
-    if(statusWhaSw == HIGH) {
-        input = analogRead(WhaVal >> 3);
+    digitalWrite(WhaSt, statusWhaSt);
+    delay(500);
+    if(statusWhaSt == HIGH) {
+        input = analogRead(WhaVal) >> 3;
         if(input != statusWhaVal) {
             statusWhaVal = input;
             MIDI.sendControlChange(MIDIwha, statusWhaVal, podAddress);
+            digitalWrite(WhaSt, LOW);
+            delay(200);              
+            digitalWrite(WhaSt, HIGH);
         }
+    }
+    */
+    // Volume
+    input = analogRead(Volume) >> 3;
+    if(input != statusVolume) {
+        statusVolume = input;
+        MIDI.sendControlChange(MIDIvolume, statusVolume, podAddress);
     }
 
     // Call MIDI.read() the fastest you can for real-time performance.
