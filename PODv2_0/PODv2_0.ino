@@ -139,6 +139,14 @@ handleControlChange(byte channel, byte number, byte value) {
         LCD.print(value &0x7F);
         return;  
     }
+    if(number == MIDIwhaEnable) {
+        LCD.setCursor(17, 0);
+        if(value < 64)
+            LCD.print("   ");
+        else
+            LCD.print("Wha");
+        return;
+    }
     LCD.setCursor(4, 1);
     LCD.print("   ");
     LCD.setCursor(4, 1);
@@ -200,8 +208,8 @@ setupPedalBoard() {
     pinMode(WhaSt,  OUTPUT);      // Wha Status Led (same pin as the internal Led)
     pinMode(WhaVal, INPUT);       // Wha Potentiometer
     pinMode(Volume, INPUT);       // Volume Potentiometer
-    statusVolume = analogRead(Volume) >> 3;
-    statusWhaVal = analogRead(WhaVal) >> 3;
+    statusVolume = (analogRead(Volume) >> 4) << 1;
+    statusWhaVal = (analogRead(WhaVal) >> 4) << 1;
     digitalWrite(WhaSt, statusWhaSt);
 }
 
@@ -283,18 +291,15 @@ loop() {
     // Wha
     input = digitalRead(WhaSw);
     if(input != statusWhaSw) {
-        LCD.setCursor(19, 0);
         statusWhaSw = input;
         if(input == LOW) {// High to LOW transition
             if(statusWhaSt == HIGH) {// Toggle the wha status
                 statusWhaSt = LOW;
                 MIDI.sendControlChange(MIDIwhaEnable, 0, podAddress);
-                LCD.print(" ");
             }
             else {
                 statusWhaSt = HIGH;
                 MIDI.sendControlChange(MIDIwhaEnable, 127, podAddress);
-                LCD.print("*");
             }
         }
         digitalWrite(WhaSt, statusWhaSt);
