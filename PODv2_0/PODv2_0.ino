@@ -53,8 +53,9 @@
 // connections between the two items of equipment (one for the audio, and one for the comms data).
 
 // MIDI CC for POD v2
-const byte MIDIvolume = 7;
-const byte MIDIwha    = 4;
+const byte MIDIvolume    = 7;
+const byte MIDIwhaValue  = 4;
+const byte MIDIwhaEnable = 43;
 
 
 // Serial port communicates on digital pins 0 (RX) and 1 (TX) as well as with the computer via USB. 
@@ -135,7 +136,7 @@ handleControlChange(byte channel, byte number, byte value) {
         LCD.setCursor(12, 0);
         LCD.print("   ");
         LCD.setCursor(12, 0);
-        LCD.print(value);
+        LCD.print(value &0x7F);
         return;  
     }
     LCD.setCursor(4, 1);
@@ -188,7 +189,7 @@ setupLCD() {
 
 void
 setupPedalBoard() {
-    // There are 20K pullup resistors built into the Atmega chip... 
+    // There are 20K pullup resistors built into the Atmega chip...
     pinMode(ChanA,  INPUT_PULLUP);// Channel A  Switch
     pinMode(ChanB,  INPUT_PULLUP);// Channel B  Switch
     pinMode(ChanC,  INPUT_PULLUP);// Channel C  Switch
@@ -210,8 +211,8 @@ setupMIDI() {
     MIDI.setHandleControlChange(handleControlChange);
     MIDI.setHandleProgramChange(handleProgramChange);
     MIDI.setHandleSystemExclusive(handleSysEx);
-    MIDI.turnThruOff();
-    MIDI.begin(podAddress);
+    MIDI.begin(podAddress);// Calling MIDI.begin(), the Thru functionality is activated 
+    MIDI.turnThruOff();    // Since we don't want to act as a MIDI Thru.
 }
 
 
@@ -279,32 +280,34 @@ loop() {
             MIDI.sendProgramChange(currentBank+currentChan, podAddress);
         }
     }
-    /* Wha
+    // Wha
     input = digitalRead(WhaSw);
     if(input != statusWhaSw) {
+        LCD.setCursor(19, 0);
         statusWhaSw = input;
         if(input == LOW) {// High to LOW transition
-            if(statusWhaSt == HIGH)// Toggle the wha status
+            if(statusWhaSt == HIGH) {// Toggle the wha status
                 statusWhaSt = LOW;
-            else
+                MIDI.sendControlChange(MIDIwhaEnable, 0, podAddress);
+                LCD.print(" ");
+            }
+            else {
                 statusWhaSt = HIGH;
+                MIDI.sendControlChange(MIDIwhaEnable, 127, podAddress);
+                LCD.print("*");
+            }
         }
+        digitalWrite(WhaSt, statusWhaSt);
     }
-    digitalWrite(WhaSt, statusWhaSt);
-    delay(500);
     if(statusWhaSt == HIGH) {
-        input = analogRead(WhaVal) >> 3;
+        input = (analogRead(WhaVal) >> 4) << 1;
         if(input != statusWhaVal) {
             statusWhaVal = input;
-            MIDI.sendControlChange(MIDIwha, statusWhaVal, podAddress);
-            digitalWrite(WhaSt, LOW);
-            delay(200);              
-            digitalWrite(WhaSt, HIGH);
+            MIDI.sendControlChange(MIDIwhaValue, statusWhaVal, podAddress);
         }
     }
-    */
     // Volume
-    input = analogRead(Volume) >> 3;
+    input = (analogRead(Volume) >> 4) << 1;
     if(input != statusVolume) {
         statusVolume = input;
         MIDI.sendControlChange(MIDIvolume, statusVolume, podAddress);
