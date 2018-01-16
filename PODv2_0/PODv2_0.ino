@@ -28,7 +28,7 @@
 //     /  5     4 \
 //     | 3       1 |
 //      \         /
-//       \ __**_ /
+//       \ __/\__/
         
 // Pin No.  IN Signal name  THRU Signal name  Out Signal name
 // 1        No Connect      No Connect        No Connect
@@ -61,7 +61,6 @@ const byte MIDIwha    = 4;
 // Thus, since we use these functions, we cannot also use pins 0 and 1 for digital input or output.
 
 #include <MIDI.h>
-#include <midi_Defs.h>
 #include <LiquidCrystal.h>
 
 //The circuit:(ATTENTION max contrast is when VO is ground !)
