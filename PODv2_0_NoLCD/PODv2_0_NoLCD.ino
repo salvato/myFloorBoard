@@ -53,8 +53,8 @@
 // connections between the two items of equipment (one for the audio, and one for the comms data).
 
 // MIDI CC for POD v2
-const byte MIDIvolume    = 7;
-const byte MIDIwhaValue  = 4;
+const byte MIDIvolume    =  7;
+const byte MIDIwhaValue  =  4;
 const byte MIDIwhaEnable = 43;
 
 
@@ -70,13 +70,13 @@ const byte MIDIwhaEnable = 43;
 // This can cause electrical noise and introduce jitter in the analog system.
 
 // Digital Inputs
-const int BankUp = 4;
-const int BankDn = 5;
-const int ChanA  = 6;
-const int ChanB  = 7;
-const int ChanC  = 8;
-const int ChanD  = 9;
-const int WhaSw  = 10;// Wha On-Off
+const int BankUp = 2;
+const int BankDn = 3;
+const int ChanA  = 4;
+const int ChanB  = 5;
+const int ChanC  = 6;
+const int ChanD  = 7;
+const int WhaSw  = 8;// Wha On-Off
 
 // Digital Outputs
 const int WhaSt  = 13;// Wha Status Led (same as LED_BUILTIN)
