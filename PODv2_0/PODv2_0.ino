@@ -56,8 +56,14 @@
 // Serial port communicates on digital pins 0 (RX) and 1 (TX) as well as with the computer via USB. 
 // Thus, since we use these functions, we cannot also use pins 0 and 1 for digital input or output.
 
+#define WITH_LCD //define this if a LCD is connected 
+
 #include <MIDI.h>
+
+#ifdef WITH_LCD
 #include <LiquidCrystal.h>
+#endif
+
 
 //The circuit:(ATTENTION max contrast is when VO is ground !)
 
@@ -80,34 +86,45 @@ const byte MIDIvolume    = 7;
 const byte MIDIwhaValue  = 4;
 const byte MIDIwhaEnable = 43;
 
-// initialize the LCD library by associating any needed LCD interface pin
-// with the arduino pin number it is connected to
-//
-const int rs = 12;
-const int en = 11;
+
+#ifdef WITH_LCD
+// LCD interface pin and corresponding Arduino pin number it is connected to:
+const int rs = 7;
+const int en = 6;
 const int d4 = 5;
 const int d5 = 4;
 const int d6 = 3;
 const int d7 = 2;
+#endif
+
 
 // PedalBoard - Arduino pins
+//
+const int ChanA  = 8;
+const int ChanB  = 9;
+const int ChanC  = 10;
+const int ChanD  = 11;
+const int WhaSw  = 12;// Wha On-Off
+const int WhaSt  = 13;// Wha Status Led
+#ifdef WITH_LCD
 // Warning:
 // The Atmega datasheet cautions against switching analog pins in close
 // temporal proximity to making A/D readings (analogRead) on other analog pins.
 // This can cause electrical noise and introduce jitter in the analog system.
-//
-const int ChanA  = 6;
-const int ChanB  = 7;
-const int ChanC  = 8;
-const int ChanD  = 9;
 const int BankUp = A0;
 const int BankDn = A1;
-const int WhaSw  = 10;// Wha On-Off
-const int WhaSt  = 13;// Wha Status Led
+#else
+const int BankUp = 6;
+const int BankDn = 7;
+#endif
 const int WhaVal = A2;
 const int Volume = A3;
 
-const byte podAddress     = 1;// This is the MIDI address #1 (the POD default)
+
+// Miscellanea
+const byte podAddress = 1;// This is the MIDI address #1 (the POD default)
+const unsigned long debounceTime = 10;  // milliseconds
+
 
 // Used variables
 int  input;                                                 
@@ -123,14 +140,23 @@ int statusBankDn = HIGH;
 int statusWhaSw  = HIGH;// Wha On-Off
 int statusWhaSt  = LOW; // Wha Status Led
 int statusWhaVal = 0;
+#ifdef WITH_LCD
+int statusVolume =-1;// Just to check if the POD is connected;
+#else
 int statusVolume = 0;
+#endif
 int currentBank  = 0;// from 0 to 8 corresponding to POD 1 to 9
-int currentChan  = 0;// from 0 to 4 corresponding to POD A to D
+int currentChan  = 0;// from 0 to 3 corresponding to POD A to D
+
 
 // Create the used objects 
+#ifdef WITH_LCD
 LiquidCrystal LCD(rs, en, d4, d5, d6, d7);
+#endif
 MIDI_CREATE_DEFAULT_INSTANCE();
 
+
+#ifdef WITH_LCD
 void
 handleControlChange(byte channel, byte number, byte value) {
     if(value & 0x80) 
@@ -171,10 +197,11 @@ void
 handleProgramChange(byte channel, byte number) {
     currentBank = (number-1) >> 2;
     currentChan = (number-1) & 0x03;
-    LCD.setCursor(5, 0);
+    LCD.setCursor(4, 0);
     LCD.print("   ");
-    LCD.setCursor(5, 0);
-    LCD.print(number);
+    LCD.setCursor(4, 0);
+    LCD.print(currentBank+1);
+    LCD.print(char(65+currentChan));
 }
 
 
@@ -191,11 +218,21 @@ void
 setupLCD() {
     // set up the LCD
     LCD.begin(20, 4);// Number of Columns and Rows:
-    
-    // Print the headers to the LCD. 
+    LCD.setCursor(8, 1);
+    LCD.print("POD");
+    LCD.setCursor(4, 2);
+    LCD.print("Disconnected");
+}
+
+
+void
+printHeaders() {
+    // Print the headers to the LCD.
+    LCD.clear(); 
     LCD.setCursor(0, 0);// LCD.setCursor(col, row)   
     LCD.print("Pgm:");
-    LCD.print(currentBank+currentChan);
+    LCD.print(currentBank+1);
+    LCD.print(char(65+currentChan));
     LCD.setCursor(8, 0);
     LCD.print("Vol:");
     LCD.print(statusVolume);
@@ -204,7 +241,7 @@ setupLCD() {
     LCD.setCursor(8, 1);
     LCD.print("Val:");
 }
-
+#endif
 
 void
 setupPedalBoard() {
@@ -219,27 +256,44 @@ setupPedalBoard() {
     pinMode(WhaSt,  OUTPUT);      // Wha Status Led (same pin as the internal Led)
     pinMode(WhaVal, INPUT);       // Wha Potentiometer
     pinMode(Volume, INPUT);       // Volume Potentiometer
-    statusVolume = (analogRead(Volume) >> 4) << 1;
-    statusWhaVal = (analogRead(WhaVal) >> 4) << 1;
-    digitalWrite(WhaSt, statusWhaSt);
 }
 
 
 void
 setupMIDI() {
+#ifdef WITH_LCD
     MIDI.setHandleControlChange(handleControlChange);
     MIDI.setHandleProgramChange(handleProgramChange);
     MIDI.setHandleSystemExclusive(handleSysEx);
+#endif
     MIDI.begin(podAddress);// Calling MIDI.begin(), the Thru functionality is activated 
     MIDI.turnThruOff();    // Since we don't want to act as a MIDI Thru.
 }
 
 
+void
+initPOD() {
+#ifdef WITH_LCD
+    while(statusVolume < 0) {
+        MIDI.sendControlChange(MIDIvolume, 0, podAddress);
+        MIDI.read();
+    }
+    MIDI.sendProgramChange(currentChan+1+(currentBank<<2), podAddress);
+#endif
+    digitalWrite(WhaSt, statusWhaSt);
+}
+
 void 
 setup() {
     setupPedalBoard();
+#ifdef WITH_LCD
     setupLCD();
+#endif
     setupMIDI();
+    initPOD();
+#ifdef WITH_LCD
+    printHeaders();
+#endif
 }
 
 
@@ -250,32 +304,40 @@ loop() {
     if(input != statusChanA) {
         statusChanA = input;
         if(input == LOW) {
-            currentChan = 1;
-            MIDI.sendProgramChange(currentBank+currentChan, podAddress);
+            MIDI.sendProgramChange(1+(currentBank<<2), podAddress);
+#ifdef WITH_LCD
+            currentChan = 0;
+#endif
         }
     }
     input = digitalRead(ChanB);
     if(input != statusChanB) {
         statusChanB = input;
         if(input == LOW) {
-            currentChan = 2;
-            MIDI.sendProgramChange(currentBank+currentChan, podAddress);
+            MIDI.sendProgramChange(2+(currentBank<<2), podAddress);
+#ifdef WITH_LCD
+            currentChan = 1;
+#endif
         }
     }
     input = digitalRead(ChanC);
     if(input != statusChanC) {
         statusChanC = input;
         if(input == LOW) {
-            currentChan = 3;
-            MIDI.sendProgramChange(currentBank+currentChan, podAddress);
+            MIDI.sendProgramChange(3+(currentBank<<2), podAddress);
+#ifdef WITH_LCD
+            currentChan = 2;
+#endif
         }
     }
     input = digitalRead(ChanD);
     if(input != statusChanD) {
         statusChanD = input;
         if(input == LOW) {
-            currentChan = 4;
-            MIDI.sendProgramChange(currentBank+currentChan, podAddress);
+            MIDI.sendProgramChange(4+(currentBank<<2), podAddress);
+#ifdef WITH_LCD
+            currentChan = 3;
+#endif
         }
     }
     // Bank Switches
@@ -283,20 +345,21 @@ loop() {
     if(input != statusBankDn) {
         statusBankDn = input;
         if(input == LOW) {
-            currentBank += 4;
-            if(currentBank > 36)
-                currentBank = 0;
-            MIDI.sendProgramChange(currentBank+currentChan, podAddress);
+            currentBank--;
+            if(currentBank < 0)
+                currentBank = 8;
+            MIDI.sendProgramChange(1+(currentBank<<2)+currentChan, podAddress);
+            delay(debounceTime);
         }
     }
     input = digitalRead(BankUp);
     if(input != statusBankUp) {
         statusBankUp = input;
         if(input == LOW) {
-            currentBank -= 4;
-            if(currentBank < 0)
-                currentBank = 32;
-            MIDI.sendProgramChange(currentBank+currentChan, podAddress);
+            currentBank++;
+            if(currentBank > 8) currentBank = 0;
+            MIDI.sendProgramChange(1+(currentBank<<2)+currentChan, podAddress);
+            delay(debounceTime);
         }
     }
     // Wha
@@ -312,6 +375,7 @@ loop() {
                 statusWhaSt = HIGH;
                 MIDI.sendControlChange(MIDIwhaEnable, 127, podAddress);
             }
+            delay(debounceTime);
         }
         digitalWrite(WhaSt, statusWhaSt);
     }
@@ -329,6 +393,8 @@ loop() {
         MIDI.sendControlChange(MIDIvolume, statusVolume, podAddress);
     }
 
+#ifdef WITH_LCD
     // Call MIDI.read() the fastest you can for real-time performance.
     MIDI.read();
+#endif
 }
