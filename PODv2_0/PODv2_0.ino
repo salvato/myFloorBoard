@@ -52,11 +52,6 @@
 // at each receiving end of the link, and eliminates hum-loops which might arise if there were two separate ground
 // connections between the two items of equipment (one for the audio, and one for the comms data).
 
-// MIDI CC for POD v2
-const byte MIDIvolume    = 7;
-const byte MIDIwhaValue  = 4;
-const byte MIDIwhaEnable = 43;
-
 
 // Serial port communicates on digital pins 0 (RX) and 1 (TX) as well as with the computer via USB. 
 // Thus, since we use these functions, we cannot also use pins 0 and 1 for digital input or output.
@@ -78,6 +73,12 @@ const byte MIDIwhaEnable = 43;
 // * 10K potentiometer:
 // *   ends to +5V and ground
 // *   wiper to LCD VO pin (pin 3)
+
+
+// Used MIDI CC for POD v2
+const byte MIDIvolume    = 7;
+const byte MIDIwhaValue  = 4;
+const byte MIDIwhaEnable = 43;
 
 // initialize the LCD library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
@@ -123,8 +124,8 @@ int statusWhaSw  = HIGH;// Wha On-Off
 int statusWhaSt  = LOW; // Wha Status Led
 int statusWhaVal = 0;
 int statusVolume = 0;
-int currentBank  = 0;
-int currentChan  = 1;
+int currentBank  = 0;// from 0 to 8 corresponding to POD 1 to 9
+int currentChan  = 0;// from 0 to 4 corresponding to POD A to D
 
 // Create the used objects 
 LiquidCrystal LCD(rs, en, d4, d5, d6, d7);
@@ -132,11 +133,14 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 
 void
 handleControlChange(byte channel, byte number, byte value) {
+    if(value & 0x80) 
+        return;// Not a valid value;
     if(number == MIDIvolume) {// Channel Volume
+        statusVolume = value;
         LCD.setCursor(12, 0);
         LCD.print("   ");
         LCD.setCursor(12, 0);
-        LCD.print(value &0x7F);
+        LCD.print(statusVolume);
         return;  
     }
     if(number == MIDIwhaEnable) {
@@ -147,6 +151,11 @@ handleControlChange(byte channel, byte number, byte value) {
             LCD.print("Wha");
         return;
     }
+    if(number == MIDIwhaValue) {// Wha Value
+        statusWhaVal = value;
+        return;
+    }
+    // else
     LCD.setCursor(4, 1);
     LCD.print("   ");
     LCD.setCursor(4, 1);
@@ -160,6 +169,8 @@ handleControlChange(byte channel, byte number, byte value) {
 
 void
 handleProgramChange(byte channel, byte number) {
+    currentBank = (number-1) >> 2;
+    currentChan = (number-1) & 0x03;
     LCD.setCursor(5, 0);
     LCD.print("   ");
     LCD.setCursor(5, 0);
