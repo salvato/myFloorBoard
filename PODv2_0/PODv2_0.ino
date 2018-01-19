@@ -125,7 +125,7 @@ const int Volume = A3;
 
 // Miscellanea
 const byte podAddress = 1;// This is the MIDI address #1 (the POD default)
-const unsigned long debounceTime = 10;  // milliseconds
+const unsigned long debounceTime = 100;  // milliseconds
 
 
 // Used variables
