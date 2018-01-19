@@ -7,6 +7,7 @@ minH    = 35;
 
 width   = 150;
 
+center = true;
 upper = false;
 lower = false;
 all    = true;
@@ -105,9 +106,18 @@ difference() {
 }
 
 
-if (upper) {
+if (upper && center) {
     difference() {
-        pedal_center();
+        pedal_center(true, true);
+        #translate([-25, -175, -9.5])
+            cube([200, 200, 15]);
+    }
+}
+
+
+if (upper && !center) {
+    difference() {
+        pedal_center(false, false);
         #translate([-25, -175, -9.5])
             cube([200, 200, 15]);
     }
@@ -115,7 +125,7 @@ if (upper) {
 
 if (lower) {
     intersection() {
-        pedal_center();
+        pedal_center(false, false);
         #translate([-25, -175, -9.5])
             cube([200, 200, 15]);
     }
