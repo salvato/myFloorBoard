@@ -5,12 +5,15 @@ edgeRad = 10;
 base     = 150;
 minH    = 35;
 
-width   = 150;
+width    = 150;
 
-center = true;
-upper = false;
-lower = false;
-all    = true;
+center   = true;
+upper   = false;
+lower   = false;
+all      = true;
+
+slope = atan2(edgeRad, base);
+
 
 module 
 shap(){
@@ -45,7 +48,7 @@ difference() {
         if(withLCD) {
             // Supporto viti LCD
             translate([74, -28.5, 38])
-                rotate([0, -4.5, 0])
+                rotate([0, -slope, 0])
                     difference() {
                         union() {
                             translate([0, 0, 0])
@@ -76,10 +79,10 @@ difference() {
             // Scasso LCD
             color([0, 0, 1])
             translate([80, -125, 38])
-                rotate([0, -4.5, 0])
+                rotate([0, -slope, 0])
                     cube([42, 100, 8]);
             translate([71, -125, 36])
-                rotate([0, -4.5, 0])
+                rotate([0, -slope, 0])
                     cube([60, 100, 1.5]);
         }
         if(withMIDI) {
@@ -95,11 +98,11 @@ difference() {
         }
         // Scasso pulsante 1
         translate([35, -35, 25])
-            rotate([0, -4.5, 0])
+            rotate([0, -slope, 0])
                 cylinder(d = 13, h = 25);
         // Scasso pulsante 2
         translate([35, -115, 25])
-            rotate([0, -4.5, 0])
+            rotate([0, -slope, 0])
                 cylinder(d = 13, h = 25);
         }
     }
