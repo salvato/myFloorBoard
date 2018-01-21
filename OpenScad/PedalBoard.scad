@@ -1,5 +1,8 @@
 $fn = 80;
 
+font1 = "FreeSans:style=Bold";
+
+
 wallThickness = 2.0;
 
 edgeRad = 10;
@@ -35,76 +38,98 @@ shap(){
 
 module
 pedal_center(withLCD, withMIDI) {
-difference() {
-    union() {   
-        // Carcassa
-        translate([0, 0, minH])
-            rotate([90, 90, 0])
-                linear_extrude(height = width)
-                    difference() {
-                        offset(r = wallThickness)
+    difference() {
+        union() {   
+            // Carcassa
+            translate([0, 0, minH])
+                rotate([90, 90, 0])
+                    linear_extrude(height = width)
+                        difference() {
+                            offset(r = wallThickness)
+                                shap();
                             shap();
-                        shap();
-                    }
-        if(withLCD) {
-            // Supporto viti LCD
-            translate([74, -28.5, 40-4])
-                rotate([0, -slope, 0])
-                    difference() {
-                        union() {
-                            translate([0, 0, 0])
-                                cylinder(d = 6, h = 5);
-                            translate([0, -93, 0])
-                                cylinder(d = 6, h = 5);
-                            translate([54, 0, 0])
-                                cylinder(d = 6, h = 5);
-                            translate([54, -93, 0])
-                                cylinder(d = 6, h = 5);
                         }
-                        // Fori viti LCD                
-                        #union() {
-                            translate([0, 0, -0.5])
-                                cylinder(d = 3, h = 6.5);
-                            translate([0, -93, -0.5])
-                                cylinder(d = 3, h = 6.5);
-                            translate([54, 0, -0.5])
-                                cylinder(d = 3, h = 6.5);
-                            translate([54, -93, -0.5])
-                                cylinder(d = 3, h = 6.5);
+            if(withLCD) {
+                // Supporto viti LCD
+                translate([74, -28.5, 40-4])
+                    rotate([0, -slope, 0])
+                        difference() {
+                            union() {
+                                translate([0, 0, 0])
+                                    cylinder(d = 6, h = 5);
+                                translate([0, -93, 0])
+                                    cylinder(d = 6, h = 5);
+                                translate([54, 0, 0])
+                                    cylinder(d = 6, h = 5);
+                                translate([54, -93, 0])
+                                    cylinder(d = 6, h = 5);
+                            }
+                            // Fori viti LCD                
+                            union() {
+                                translate([0, 0, -0.5])
+                                    cylinder(d = 3, h = 6.5);
+                                translate([0, -93, -0.5])
+                                    cylinder(d = 3, h = 6.5);
+                                translate([54, 0, -0.5])
+                                    cylinder(d = 3, h = 6.5);
+                                translate([54, -93, -0.5])
+                                    cylinder(d = 3, h = 6.5);
+                            }
                         }
+            }
+        }
+        union() {
+            if(withLCD) {
+                // Scasso LCD
+                color([0, 0, 1])
+                translate([80, -125, 38])
+                    rotate([0, -slope, 0])
+                        cube([42, 100, 8]);
+                translate([71, -125, 35])
+                    rotate([0, -slope, 0])
+                        cube([60, 100, 1.5]);
+            }
+            if(withMIDI) {
+                // Scasso MIDI In
+                translate([145, -45, 22])
+                    rotate([0, 90, 0])
+                    cylinder(r = 8.5, h = 15);
+                // Scasso MIDI Out
+                translate([145, -105, 22])
+                    rotate([0, 90, 0])
+                    cylinder(r = 8.5, h = 15);
+                    
+            }
+            // Scasso pulsante 1
+            translate([35, -35, 25]) {
+                rotate([0, -slope, 0]) {
+                    cylinder(d = 13, h = 25);
+                    translate([15, 0, 0]) {
+                        rotate([0, -0, -90])
+                            linear_extrude(height = 100.0) {
+                                text("B",
+                                font = font1, 
+                                size = 10, 
+                                halign = "center");
+                            }
                     }
-        }
-    }
-    #union() {
-        if(withLCD) {
-            // Scasso LCD
-            color([0, 0, 1])
-            translate([80, -125, 38])
-                rotate([0, -slope, 0])
-                    cube([42, 100, 8]);
-            translate([71, -125, 35])
-                rotate([0, -slope, 0])
-                    cube([60, 100, 1.5]);
-        }
-        if(withMIDI) {
-            // Scasso MIDI In
-            translate([145, -45, 22])
-                rotate([0, 90, 0])
-                cylinder(r = 8.5, h = 15);
-            // Scasso MIDI Out
-            translate([145, -105, 22])
-                rotate([0, 90, 0])
-                cylinder(r = 8.5, h = 15);
-                
-        }
-        // Scasso pulsante 1
-        translate([35, -35, 25])
-            rotate([0, -slope, 0])
-                cylinder(d = 13, h = 25);
-        // Scasso pulsante 2
-        translate([35, -115, 25])
-            rotate([0, -slope, 0])
-                cylinder(d = 13, h = 25);
+                }
+            }
+            // Scasso pulsante 2
+            translate([35, -115, 25]) {
+                rotate([0, -slope, 0]) {
+                    cylinder(d = 13, h = 25);
+                    translate([15, 0, 0]) {
+                        rotate([0, -0, -90])
+                            linear_extrude(height = 100.0) {
+                                text("C",
+                                font = font1, 
+                                size = 10, 
+                                halign = "center");
+                            }
+                    }
+                }
+            }
         }
     }
 }
