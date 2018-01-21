@@ -1,16 +1,17 @@
 $fn = 80;
 
+wallThickness = 2.0;
 
 edgeRad = 10;
-base     = 150;
+base    = 150;
 minH    = 35;
 
-width    = 150;
+width   = 150;
 
-center   = true;
-upper   = false;
+center  = true;
+upper   = true;
 lower   = false;
-all      = true;
+all     = false;
 
 slope = atan2(edgeRad, base);
 
@@ -41,13 +42,13 @@ difference() {
             rotate([90, 90, 0])
                 linear_extrude(height = width)
                     difference() {
-                        offset(r = 5)
+                        offset(r = wallThickness)
                             shap();
                         shap();
                     }
         if(withLCD) {
             // Supporto viti LCD
-            translate([74, -28.5, 38])
+            translate([74, -28.5, 40-4])
                 rotate([0, -slope, 0])
                     difference() {
                         union() {
@@ -81,7 +82,7 @@ difference() {
             translate([80, -125, 38])
                 rotate([0, -slope, 0])
                     cube([42, 100, 8]);
-            translate([71, -125, 36])
+            translate([71, -125, 35])
                 rotate([0, -slope, 0])
                     cube([60, 100, 1.5]);
         }
