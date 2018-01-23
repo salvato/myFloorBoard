@@ -1,7 +1,7 @@
+// Measurements in mm
 $fn = 80;
 
 font1 = "FreeSans:style=Bold";
-
 
 wallThickness = 2.0;
 
@@ -15,14 +15,21 @@ center  = true;
 left    = false;
 right   = false;
 
-upper   = true;
+upper   = false;
 lower   = false;
+
+pushButton = 13;
 
 slope = atan2(edgeRad, base);
 
 
 module 
 shap(){
+    polygon(points=[[0, 0],
+                     [base, 0],
+                     [base, minH+edgeRad],
+                     [0, minH]]);
+    /*
     hull() {
         translate([edgeRad, edgeRad, 0])
             circle(r = edgeRad);
@@ -35,7 +42,10 @@ shap(){
                      [minH, base],
                      [minH, 0],
                      [edgeRad, 0]]);
+    
+*/
 }
+
 
 
 module
@@ -44,8 +54,8 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
         difference() {
             union() {//1   
                 // Carcassa
-                translate([0, 0, minH])
-                    rotate([90, 90, 0])
+                translate([0, 0, 0])
+                    rotate([90, 0, 0])
                         linear_extrude(height = width)
                             difference() {
                                 offset(r = wallThickness)
@@ -107,7 +117,7 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                 // Scasso pulsante 1
                 translate([35, -35, 34]) {
                     rotate([0, -slope, 0]) {
-                        #cylinder(d = 13, h = 8);
+                        #cylinder(d = pushButton, h = 8);
                         translate([15, 0, 0]) {
                             rotate([0, -0, -90])
                                 #linear_extrude(height = 5.0) {
@@ -122,7 +132,7 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                 // Scasso pulsante 2
                 translate([35, -115, 34]) {
                     rotate([0, -slope, 0]) {
-                        #cylinder(d = 13, h = 8);
+                        #cylinder(d = pushButton, h = 8);
                         translate([15, 0, 0]) {
                             rotate([0, -0, -90])
                                 #linear_extrude(height = 5.0) {
