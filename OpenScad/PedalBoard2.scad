@@ -10,7 +10,7 @@ minH = 35;
 maxH = 45;
 width = 150;
 
-center = true;
+center = false;
 left = false;
 right = false;
 
@@ -23,13 +23,67 @@ slope = atan2(maxH-minH, base);
 
 
 module 
-shap(){
+profile() {
     polygon(points=[[0, 0],
                      [base, 0],
                      [base, maxH],
                      [0, minH]]);
 }
 
+
+module
+container() {
+    translate([0, width, 0])
+    rotate([90, 0, 0])
+        linear_extrude(height = width)
+            difference() {
+                offset(r = wallThickness)
+                    profile();
+                profile();
+            }    
+}
+
+
+module
+LCD() {
+    difference() {
+        union() {
+            color([1, 0, 0])
+                cube([60, 100, 1.5]);
+            color([0, 0, 1])
+            translate([9, 0, 1.5])
+                cube([42, 100, 8]);
+        }
+        translate([4, 4, -0.5])
+        cylinder(d=3, h=2.5);
+        translate([56, 4, -0.5])
+        cylinder(d=3, h=2.5);
+        translate([4, 96, -0.5])
+        cylinder(d=3, h=2.5);
+        translate([56, 95, -0.5])
+        cylinder(d=3, h=2.5);
+    }
+}
+
+
+union() {
+    //container();
+    translate([(base-70), 0.5*(base-100), minH-3+sin(slope)*(base-70)]) {
+        translate([4, 4, 0])
+            cylinder(d=3, h=5);
+        translate([4, 96, 0])
+            cylinder(d=3, h=5);
+    }
+    translate([(base-70), 0.5*(base-100), minH-3+sin(slope)*(base-18)]) {
+        translate([56, 4, 0])
+            cylinder(d=3, h=5);
+        translate([56, 95, 0])
+            cylinder(d=3, h=5);
+    }
+    translate([(base-70), 0.5*(base-100), minH-5.5+sin(slope)*(base-70)])
+        rotate([0, -slope, 0])
+            LCD();
+}
 
 
 module
@@ -42,8 +96,8 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                     linear_extrude(height = width)
                         difference() {
                             offset(r = wallThickness)
-                                shap();
-                            shap();
+                                profile();
+                            profile();
                         }
                 if(withLCD) {
                     // Supporto viti LCD
