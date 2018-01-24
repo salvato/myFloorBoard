@@ -5,10 +5,10 @@ font1 = "FreeSans:style=Bold";
 
 wallThickness = 2.0;
 
-base = 150;
+depth = 150;
+width = 150;
 minH = 35;
 maxH = 45;
-width = 150;
 
 center = false;
 left = false;
@@ -19,14 +19,14 @@ lower = false;
 
 pushButton = 13;
 
-slope = atan2(maxH-minH, base);
+slope = atan2(maxH-minH, depth);
 
 
 module 
 profile() {
     polygon(points=[[0, 0],
-                     [base, 0],
-                     [base, maxH],
+                     [depth, 0],
+                     [depth, maxH],
                      [0, minH]]);
 }
 
@@ -67,27 +67,40 @@ LCD() {
 
 
 module
-LCDsupport() {
-    union() {
-        translate([4, 4, -0.5])
-            cylinder(d=6, h=2.5);
-        translate([56, 4, -0.5])
-            cylinder(d=6, h=2.5);
-        translate([4, 96, -0.5])
-            cylinder(d=6, h=2.5);
-        translate([56, 96, -0.5])
-            cylinder(d=6, h=2.5);
+LCDsupport(heigth) {
+    difference() {
+        union() {
+            translate([4, 4, -0.5])
+                cylinder(d=6, h=heigth);
+            translate([56, 4, -0.5])
+                cylinder(d=6, h=heigth);
+            translate([4, 96, -0.5])
+                cylinder(d=6, h=heigth);
+            translate([56, 96, -0.5])
+                cylinder(d=6, h=heigth);
+        }
+        union() {
+            translate([4, 4, -0.5])
+                cylinder(d=2, h=heigth+1);
+            translate([56, 4, -0.5])
+                cylinder(d=2, h=heigth+1);
+            translate([4, 96, -0.5])
+                cylinder(d=2, h=heigth+1);
+            translate([56, 96, -0.5])
+                cylinder(d=2, h=heigth+1);
+        }
     }
 }
 
 
-lcdPos = [base-70, 0.5*(base-100), (minH-5.5+sin(slope)*(base-70))];
+lcdPos = [depth-70, 0.5*(width-100), (minH-5.5+sin(slope)*(depth-70))];
+
 
 union() {
     container();
-    translate(lcdPos) {
+    translate(lcdPos+[0, 0, 1.5]) {
         rotate([0, -slope, 0])
-            LCDsupport();
+            LCDsupport(5);
     }
     translate(lcdPos)
         rotate([0, -slope, 0])
@@ -151,11 +164,11 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                 }
                 if(withMIDI) {
                     // Scasso MIDI In
-                    translate([base+.2, -45, 22])
+                    translate([depth+.2, -45, 22])
                         rotate([0, 90, 0])
                             #cylinder(r=8.5, h=wallThickness-.4);
                     // Scasso MIDI Out
-                    translate([base+.2, -105, 22])
+                    translate([depth+.2, -105, 22])
                         rotate([0, 90, 0])
                             #cylinder(r=8.5, h=wallThickness-.4);
                         
