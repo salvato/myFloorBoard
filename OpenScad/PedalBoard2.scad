@@ -60,27 +60,36 @@ LCD() {
         cylinder(d=3, h=2.5);
         translate([4, 96, -0.5])
         cylinder(d=3, h=2.5);
-        translate([56, 95, -0.5])
+        translate([56, 96, -0.5])
         cylinder(d=3, h=2.5);
     }
 }
 
 
+module
+LCDsupport() {
+    union() {
+        translate([4, 4, -0.5])
+            cylinder(d=6, h=2.5);
+        translate([56, 4, -0.5])
+            cylinder(d=6, h=2.5);
+        translate([4, 96, -0.5])
+            cylinder(d=6, h=2.5);
+        translate([56, 96, -0.5])
+            cylinder(d=6, h=2.5);
+    }
+}
+
+
+lcdPos = [base-70, 0.5*(base-100), (minH-5.5+sin(slope)*(base-70))];
+
 union() {
-    //container();
-    translate([(base-70), 0.5*(base-100), minH-3+sin(slope)*(base-70)]) {
-        translate([4, 4, 0])
-            cylinder(d=3, h=5);
-        translate([4, 96, 0])
-            cylinder(d=3, h=5);
+    container();
+    translate(lcdPos) {
+        rotate([0, -slope, 0])
+            LCDsupport();
     }
-    translate([(base-70), 0.5*(base-100), minH-3+sin(slope)*(base-18)]) {
-        translate([56, 4, 0])
-            cylinder(d=3, h=5);
-        translate([56, 95, 0])
-            cylinder(d=3, h=5);
-    }
-    translate([(base-70), 0.5*(base-100), minH-5.5+sin(slope)*(base-70)])
+    translate(lcdPos)
         rotate([0, -slope, 0])
             LCD();
 }
