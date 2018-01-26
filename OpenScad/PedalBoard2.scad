@@ -10,7 +10,7 @@ minH = 35;
 maxH = 45;
 pushButton = 13;// Diametro pulsanti
 slope = atan2(maxH-minH, depth);// pendenza superficie superiore
-lcdPos = [depth-70, 0.5*(width-100), (minH-5.5+sin(slope)*(depth-70))];
+lcdPos = [depth-70, 0.5*(width-100), (minH-6.5+sin(slope)*(depth-70))];
 
 // Cosa disegnare ?
 center = true;
@@ -20,8 +20,9 @@ right = false;
 upper = true;
 lower = false;
 
-
+//
 // Moduli
+//
 module 
 profile() {
     polygon(points=[[0, 0],
@@ -29,87 +30,149 @@ profile() {
                      [depth, maxH],
                      [0, minH]]);
 }
-
-
+//
+//
+module
+rinforzi() {
+    union() {
+        // Rinforzi Top
+        color("Blue") {
+            rotate([0, -slope, 0])
+                translate([0.5*wallThickness, 0, minH-0.95*7.0]) 
+                    cube([depth+wallThickness, 3.0, 7.0]);
+            rotate([0, -slope, 0])
+                translate([0.5*wallThickness, width-3.0, minH-0.95*7.0]) 
+                    cube([depth+wallThickness, 3.0, 7.0]);
+            rotate([0, -slope, 0])
+                translate([lcdPos.x-10.0, 0.5*wallThickness, minH-0.95*7.0]) 
+                    cube([3.0, width-wallThickness, 7.0]);
+        }
+        // Rinforzi Bottom
+        color("Red") {
+            translate([-0.5*wallThickness, 0, -0.5*wallThickness]) 
+                cube([depth+wallThickness, 7.0, 3.5]);
+            translate([-0.5*wallThickness, width-7.0, -0.5*wallThickness]) 
+                cube([depth+wallThickness, 7.0, 3.5]);
+        }
+        // Alloggiamenti viti fissaggio pannelli
+        color("Yellow") {
+            translate([4.0, 5.5, -wallThickness])
+                cylinder(d=10, h=minH+2*wallThickness);
+            translate([depth-4.0, 5.5, -wallThickness])
+                cylinder(d=10, h=maxH);
+            translate([4.0, width-5.5, -wallThickness])
+                cylinder(d=10, h=minH+2*wallThickness);
+            translate([depth-4.0, width-5.5, -wallThickness])
+                cylinder(d=10, h=maxH);
+        }
+    }
+}
+//
+//
+module
+foriFissaggio() {
+    union() {
+        // Alloggiamenti viti fissaggio pannelli
+        color("Yellow") {
+            translate([4, 5.5, -3*wallThickness])
+                cylinder(d=4, h=minH+8*wallThickness);
+            translate([depth-4, 5.5,  -3*wallThickness])
+                cylinder(d=4, h=maxH);
+            translate([4, width-5.5, -3*wallThickness])
+                cylinder(d=4, h=minH+2*wallThickness);
+            translate([depth-4, width-5.5, -3*wallThickness])
+                cylinder(d=4, h=maxH);
+        }
+    }
+}
+//
+//
 module
 container() {
-    translate([0, width, 0])
-    rotate([90, 0, 0])
-        linear_extrude(height = width)
-            difference() {
-                offset(r = wallThickness)
-                    profile();
-                profile();
-            }    
+    difference() {
+        union() {
+            translate([0, width, 0])
+            rotate([90, 0, 0])
+                linear_extrude(height = width)
+                    difference() {
+                        offset(r = wallThickness)
+                            profile();
+                        profile();
+                    }
+            rinforzi();
+        }
+        foriFissaggio();
+    }    
 }
-
-
+//
+//
 module
 LCD() {
     difference() {
         union() {
             color([1, 0, 0])
-                cube([60, 100, 1.5]);
+                cube([60, 100, 1.5]);//PCB
             color([0, 0, 1])
-            translate([9, 0, 1.5])
-                cube([42, 100, 8]);
+                translate([9, 0, 1.5])
+                    cube([42, 100, 8]);//LCD
         }
-        translate([4, 4, -0.5])
-        cylinder(d=3, h=2.5);
-        translate([56, 4, -0.5])
-        cylinder(d=3, h=2.5);
-        translate([4, 96, -0.5])
-        cylinder(d=3, h=2.5);
-        translate([56, 96, -0.5])
-        cylinder(d=3, h=2.5);
+        diam = 4.0;
+        offset = 2.5;
+        translate([offset, offset, -0.5])
+            cylinder(d=diam, h=2.5);
+        translate([60-offset, 2, -0.5])
+            cylinder(d=diam, h=2.5);
+        translate([offset, 100-offset, -0.5])
+            cylinder(d=diam, h=2.5);
+        translate([60-offset, 100-offset, -0.5])
+            cylinder(d=diam, h=2.5);
     }
 }
-
-
+//
+//
 module
 LCDsupport(heigth) {
     difference() {
-        union() {
-            translate([4, 4, -0.5])
+        offset = 2.5;
+        union() {// Distanziatori
+            translate([offset, offset, -0.5])
                 cylinder(d=6, h=heigth);
-            translate([56, 4, -0.5])
+            translate([60-offset, offset, -0.5])
                 cylinder(d=6, h=heigth);
-            translate([4, 96, -0.5])
+            translate([offset, 100-offset, -0.5])
                 cylinder(d=6, h=heigth);
-            translate([56, 96, -0.5])
+            translate([60-offset, 100-offset, -0.5])
                 cylinder(d=6, h=heigth);
         }
-        union() {
-            translate([4, 4, -0.5])
-                cylinder(d=2, h=heigth+1);
-            translate([56, 4, -0.5])
-                cylinder(d=2, h=heigth+1);
-            translate([4, 96, -0.5])
-                cylinder(d=2, h=heigth+1);
-            translate([56, 96, -0.5])
-                cylinder(d=2, h=heigth+1);
+        union() {// Fori per viti
+            diam = 2.5;
+            translate([offset, offset, -1.5])
+                cylinder(d=diam, h=heigth+3);
+            translate([60-offset, offset, -1.5])
+                cylinder(d=diam, h=heigth+3);
+            translate([offset, 100-offset, -1.5])
+                cylinder(d=diam, h=heigth+3);
+            translate([60-offset, 100-offset, -1.5])
+                cylinder(d=diam, h=heigth+3);
         }
     }
 }
-
-
-
-
+//
+//
 module
 pedal_center(textLeft, textRight, withLCD, withMIDI) {
-    union() {
         difference() {
-            union() {  
+            union() {//1
                 // Carcassa
                 container();
                 if(withLCD) {
                     // Supporto viti LCD
-                    translate(lcdPos+[0, 0, 1.5])
+                    translate(lcdPos+[0, 0, 3.0])
                         rotate([0, -slope, 0])
-                            LCDsupport(5);
+                            LCDsupport(6);
                 }
-            }
-            
+            }// end union() 1
+            //Scassi
             union() {//2
                 // Scasso LCD
                 if(withLCD) {
@@ -122,30 +185,27 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                     rotate([0, -slope, 0]) {
                         #cylinder(d = pushButton, h = 8);
                         // Etichetta pulsante 1
-                        translate([15, 0, 0]) {
+                        translate([15, 0, 0])
                             rotate([0, -0, -90])
-                                #linear_extrude(height = 5.0) {
+                                #linear_extrude(height = 5.0) 
                                     text(textLeft,
                                     font = font1, 
                                     size = 10, 
                                     halign = "center");
-                                }
-                        }
+                     
                     }
                 }
                 // Scasso pulsante 2
                 translate([width/4, width/4, 34]) {
                     rotate([0, -slope, 0]) {
                         #cylinder(d = pushButton, h = 8);
-                        translate([15, 0, 0]) {
+                        translate([15, 0, 0])
                             rotate([0, -0, -90])
-                                #linear_extrude(height = 5.0) {
+                                #linear_extrude(height = 5.0)
                                     text(textRight,
                                     font = font1, 
                                     size = 10, 
                                     halign = "center");
-                                }
-                        }
                     }
                 }
                 // Scassi connettori MIDI
@@ -161,28 +221,10 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                         
                 }
             }// end union() 2
-        }// end difference() 1
-        
-        // Rinforzi
-        color("Blue")
-            rotate([0, -slope, 0])
-                translate([0.5*wallThickness, 0, minH-0.95*7.0]) 
-                    cube([depth+wallThickness, 3.0, 7.0]);
-        color("Blue")
-            rotate([0, -slope, 0])
-                translate([0.5*wallThickness, width-3.0, minH-0.95*7.0]) 
-                    cube([depth+wallThickness, 3.0, 7.0]);
-
-        color("Red")
-            rotate([0, -slope, 0])
-                translate([lcdPos.x-10.0, 0.5*wallThickness, minH-0.95*7.0]) 
-                    cube([3.0, width-wallThickness, 7.0]);
-
-
-    }
+        }// end difference() 1    
 }
-
-
+//
+//
 if(center) {
     if(upper) {
         difference() {
@@ -202,8 +244,8 @@ if(center) {
         pedal_center("C", "D", true, true);
     }
 }
-
-
+//
+//
 if(left) {
     if(upper) {
         difference() {
@@ -226,8 +268,8 @@ if(left) {
             pedal_center("A", "B", false, false);
     }
 }
-
-
+//
+//
 if(right) {
     if(upper) {
         difference() {
