@@ -10,7 +10,7 @@ minH = 35;
 maxH = 45;
 pushButton = 13;// Diametro pulsanti
 slope = atan2(maxH-minH, depth);// pendenza superficie superiore
-lcdPos = [depth-70, 0.5*(width-100), (minH-6.5+sin(slope)*(depth-70))];
+lcdPos = [depth-70, 0.5*(width-100)+15.0, (minH-6.5+sin(slope)*(depth-70))];
 
 // Cosa disegnare ?
 center = true;
@@ -44,7 +44,7 @@ rinforzi() {
                 translate([0.5*wallThickness, width-3.0, minH-0.95*7.0]) 
                     cube([depth+wallThickness, 3.0, 7.0]);
             rotate([0, -slope, 0])
-                translate([lcdPos.x-10.0, 0.5*wallThickness, minH-0.95*7.0]) 
+                translate([lcdPos.x-3.0, 0.5*wallThickness, minH-0.95*7.0]) 
                     cube([3.0, width-wallThickness, 7.0]);
         }
         // Rinforzi Bottom
@@ -210,15 +210,28 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                 }
                 // Scassi connettori MIDI
                 if(withMIDI) {
-                    // Scasso MIDI In
-                    translate([depth+.2, 3*width/4, 22])
-                        rotate([0, 90, 0])
-                            #cylinder(r=8.5, h=wallThickness-.4);
                     // Scasso MIDI Out
-                    translate([depth+.2, width/4, 22])
+                    yPos1 = 28;
+                    translate([depth+.2, yPos1, 22])
                         rotate([0, 90, 0])
                             #cylinder(r=8.5, h=wallThickness-.4);
-                        
+                    translate([depth-2*wallThickness, yPos1-11.5, 22])
+                        rotate([0, 90, 0])
+                            #cylinder(r=2.5, h=4*wallThickness);
+                    translate([depth-2*wallThickness, yPos1+11.5, 22])
+                        rotate([0, 90, 0])
+                            #cylinder(r=2.5, h=4*wallThickness);
+                    // Scasso MIDI In
+                    yPos2 = 62;
+                    translate([depth+.2, yPos2, 22])
+                        rotate([0, 90, 0])
+                            #cylinder(r=8.5, h=wallThickness-.4);
+                    translate([depth-2*wallThickness, yPos2-11.5, 22])
+                        rotate([0, 90, 0])
+                            #cylinder(r=2.5, h=4*wallThickness);
+                    translate([depth-2*wallThickness, yPos2+11.5, 22])
+                        rotate([0, 90, 0])
+                            #cylinder(r=2.5, h=4*wallThickness);
                 }
             }// end union() 2
         }// end difference() 1    
