@@ -14,8 +14,8 @@ lcdPos = [depth-70, 0.5*(width-100)+15.0, (minH-6.5+sin(slope)*(depth-70))];
 
 // Cosa disegnare ?
 center = true;
-left = false;
-right = false;
+left = true;
+right = true;
 
 upper = true;
 lower = false;
@@ -75,11 +75,11 @@ foriFissaggio() {
         // Alloggiamenti viti fissaggio pannelli
         color("Yellow") {
             translate([4, 5.5, -3*wallThickness])
-                cylinder(d=4, h=minH+8*wallThickness);
+                cylinder(d=4, h=minH);
             translate([depth-4, 5.5,  -3*wallThickness])
                 cylinder(d=4, h=maxH);
             translate([4, width-5.5, -3*wallThickness])
-                cylinder(d=4, h=minH+2*wallThickness);
+                cylinder(d=4, h=minH);
             translate([depth-4, width-5.5, -3*wallThickness])
                 cylinder(d=4, h=maxH);
         }
@@ -243,7 +243,7 @@ if(center) {
         difference() {
             pedal_center("C", "D", true, true);
             translate([-0.25*depth, -0.25*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                #cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else if(lower) {
@@ -264,16 +264,16 @@ if(left) {
         difference() {
             translate([0, width, 0])
                 pedal_center("A", "B", false, false);
-            translate([-25, width-175, -9.5])
-                #cube([200, 200, 15]);
+            translate([-0.25*depth, 0.75*width, -9.5])
+                #cube([1.5*depth, 1.5*width, 15]);
         }
     } 
     else if(lower) {
         intersection() {
             translate([0, width, 0])
                 pedal_center("A", "B", false, false);
-            translate([-25, width-175, -9.5])
-                #cube([200, 200, 15]);
+            translate([-0.25*depth, 0.75*width, -9.5])
+                #cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else {
@@ -288,16 +288,16 @@ if(right) {
         difference() {
             translate([0, -width, 0])
                 pedal_center("Up", "Dn", false, false);
-            translate([-25, -width-175, -9.5])
-                #cube([200, 200, 15]);
+            translate([-0.25*depth, -1.25*width, -9.5])
+                #cube([1.5*depth, 1.5*width, 15]);
         }
     } 
     else if(lower) {
         intersection() {
             translate([0, -width, 0])
                 pedal_center("Up", "Dn", false, false);
-            translate([-25, -width-175, -9.5])
-                #cube([200, 200, 15]);
+            translate([-0.25*depth, -1.25*width, -9.5])
+                #cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else {
