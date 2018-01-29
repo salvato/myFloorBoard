@@ -14,8 +14,8 @@ lcdPos = [depth-70, 0.5*(width-100)+15.0, (minH-6.5+sin(slope)*(depth-70))];
 
 // Cosa disegnare ?
 center = true;
-left = true;
-right = true;
+left = false;
+right = false;
 
 upper = true;
 lower = false;
@@ -243,14 +243,14 @@ if(center) {
         difference() {
             pedal_center("C", "D", true, true);
             translate([-0.25*depth, -0.25*width, -9.5])
-                #cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else if(lower) {
         intersection() {
             pedal_center("C", "D", true, true);
             translate([-0.25*depth, -0.25*width, -9.5])
-                #cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else {
@@ -265,7 +265,7 @@ if(left) {
             translate([0, width, 0])
                 pedal_center("A", "B", false, false);
             translate([-0.25*depth, 0.75*width, -9.5])
-                #cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, 15]);
         }
     } 
     else if(lower) {
@@ -273,7 +273,7 @@ if(left) {
             translate([0, width, 0])
                 pedal_center("A", "B", false, false);
             translate([-0.25*depth, 0.75*width, -9.5])
-                #cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else {
@@ -289,7 +289,7 @@ if(right) {
             translate([0, -width, 0])
                 pedal_center("Up", "Dn", false, false);
             translate([-0.25*depth, -1.25*width, -9.5])
-                #cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, 15]);
         }
     } 
     else if(lower) {
@@ -297,7 +297,7 @@ if(right) {
             translate([0, -width, 0])
                 pedal_center("Up", "Dn", false, false);
             translate([-0.25*depth, -1.25*width, -9.5])
-                #cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, 15]);
         }
     }
     else {
