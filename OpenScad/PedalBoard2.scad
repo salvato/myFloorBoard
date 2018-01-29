@@ -11,14 +11,15 @@ maxH = 45;
 pushButton = 13;// Diametro pulsanti
 slope = atan2(maxH-minH, depth);// pendenza superficie superiore
 lcdPos = [depth-70, 0.5*(width-100)+15.0, (minH-6.5+sin(slope)*(depth-70))];
+lHeigth = 20;
 
 // Cosa disegnare ?
 center = true;
 left = false;
 right = false;
 
-upper = true;
-lower = false;
+upper = false;
+lower = true;
 
 //
 // Moduli
@@ -49,20 +50,52 @@ rinforzi() {
         }
         // Rinforzi Bottom
         color("Red") {
-            translate([-0.5*wallThickness, 0, -0.5*wallThickness]) 
-                cube([depth+wallThickness, 7.0, 3.5]);
-            translate([-0.5*wallThickness, width-7.0, -0.5*wallThickness]) 
-                cube([depth+wallThickness, 7.0, 3.5]);
+            difference() {
+                union() {
+                    translate([-0.5*wallThickness, width-7.0, -0.5*wallThickness]) 
+                        cube([depth+wallThickness, 7.0, 5.5]);
+                    translate([20, width-7.0, 5.0-0.5*wallThickness])
+                        rotate([-90, 0, 0])
+                            cylinder(d=9, h=7);
+                    translate([depth-20, width-7.0, 5.0-0.5*wallThickness])
+                        rotate([-90, 0, 0])
+                            cylinder(d=9, h=7);
+                }
+                translate([20, width-7.5, 5.0-0.5*wallThickness])
+                    rotate([-90, 0, 0])
+                        cylinder(d=3, h=8);
+                translate([depth-20, width-7.5, 5.0-0.5*wallThickness])
+                    rotate([-90, 0, 0])
+                        cylinder(d=3, h=8);
+            }
+            difference() {
+                union() {
+                    translate([-0.5*wallThickness, 0, -0.5*wallThickness]) 
+                        cube([depth+wallThickness, 7.0, 5.5]);
+                    translate([20, 0, 5.0-0.5*wallThickness])
+                        rotate([-90, 0, 0])
+                            cylinder(d=9, h=7);
+                    translate([depth-20, 0, 5.0-0.5*wallThickness])
+                        rotate([-90, 0, 0])
+                            cylinder(d=9, h=7);
+                }
+                translate([20, -0.5, 5.0-0.5*wallThickness])
+                    rotate([-90, 0, 0])
+                        cylinder(d=3, h=8);
+                translate([depth-20, -0.5, 5.0-0.5*wallThickness])
+                    rotate([-90, 0, 0])
+                        cylinder(d=3, h=8);
+            }
         }
         // Alloggiamenti viti fissaggio pannelli
         color("Yellow") {
-            translate([4.0, 5.5, -wallThickness])
-                cylinder(d=10, h=minH+2*wallThickness);
-            translate([depth-4.0, 5.5, -wallThickness])
+            translate([4.0, 5.5, 0])
+                cylinder(d=10, h=minH);
+            translate([depth-4.0, 5.5, 0])
                 cylinder(d=10, h=maxH);
-            translate([4.0, width-5.5, -wallThickness])
-                cylinder(d=10, h=minH+2*wallThickness);
-            translate([depth-4.0, width-5.5, -wallThickness])
+            translate([4.0, width-5.5, 0])
+                cylinder(d=10, h=minH);
+            translate([depth-4.0, width-5.5, 0])
                 cylinder(d=10, h=maxH);
         }
     }
@@ -102,6 +135,25 @@ container() {
             rinforzi();
         }
         foriFissaggio();
+        // Authorship
+        translate([0.5*depth+20, 0.5*width, -1.0]) {
+            rotate([0, -0, -90])
+                #linear_extrude(height = 1.5) 
+                    //text("© Gabriele",
+                    text("Gabriele",
+                    //font = "URW Chancery L:style=bold",
+                    font = "Purisa:style=bold", 
+                    size = 10, 
+                    halign = "center");
+        translate([-20, 0, 0])
+            rotate([0, -0, -90])
+                #linear_extrude(height = 1.5) 
+                    text("Salvato",
+                    //font = "URW Chancery L:style=bold",
+                    font = "Purisa:style=bold", 
+                    size = 10, 
+                    halign = "center");
+        }
     }    
 }
 //
@@ -243,14 +295,14 @@ if(center) {
         difference() {
             pedal_center("C", "D", true, true);
             translate([-0.25*depth, -0.25*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, lHeigth]);
         }
     }
     else if(lower) {
         intersection() {
             pedal_center("C", "D", true, true);
             translate([-0.25*depth, -0.25*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, lHeigth]);
         }
     }
     else {
@@ -265,7 +317,7 @@ if(left) {
             translate([0, width, 0])
                 pedal_center("A", "B", false, false);
             translate([-0.25*depth, 0.75*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, lHeigth]);
         }
     } 
     else if(lower) {
@@ -273,7 +325,7 @@ if(left) {
             translate([0, width, 0])
                 pedal_center("A", "B", false, false);
             translate([-0.25*depth, 0.75*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, lHeigth]);
         }
     }
     else {
@@ -289,7 +341,7 @@ if(right) {
             translate([0, -width, 0])
                 pedal_center("Up", "Dn", false, false);
             translate([-0.25*depth, -1.25*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, lHeigth]);
         }
     } 
     else if(lower) {
@@ -297,7 +349,7 @@ if(right) {
             translate([0, -width, 0])
                 pedal_center("Up", "Dn", false, false);
             translate([-0.25*depth, -1.25*width, -9.5])
-                cube([1.5*depth, 1.5*width, 15]);
+                cube([1.5*depth, 1.5*width, lHeigth]);
         }
     }
     else {
