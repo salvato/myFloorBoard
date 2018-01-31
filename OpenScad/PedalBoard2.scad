@@ -197,7 +197,7 @@ LCDsupport(heigth) {
                 cylinder(d=6, h=heigth);
         }
         union() {// Fori per viti
-            diam = 2.5;
+            diam = 2.0;
             translate([offset, offset, -1.5])
                 cylinder(d=diam, h=heigth+3);
             translate([60-offset, offset, -1.5])
@@ -267,23 +267,23 @@ pedal_center(textLeft, textRight, withLCD, withMIDI) {
                     translate([depth+.2, yPos1, 22])
                         rotate([0, 90, 0])
                             #cylinder(r=8.5, h=wallThickness-.4);
-                    translate([depth-2*wallThickness, yPos1-11.5, 22])
-                        rotate([0, 90, 0])
-                            #cylinder(r=2.5, h=4*wallThickness);
-                    translate([depth-2*wallThickness, yPos1+11.5, 22])
-                        rotate([0, 90, 0])
-                            #cylinder(r=2.5, h=4*wallThickness);
+                    //translate([depth-2*wallThickness, yPos1-11.5, 22])
+                        //rotate([0, 90, 0])
+                            //#cylinder(r=2.5, h=4*wallThickness);
+                    //translate([depth-2*wallThickness, yPos1+11.5, 22])
+                        //rotate([0, 90, 0])
+                            //#cylinder(r=2.5, h=4*wallThickness);
                     // Scasso MIDI In
                     yPos2 = 62;
                     translate([depth+.2, yPos2, 22])
                         rotate([0, 90, 0])
                             #cylinder(r=8.5, h=wallThickness-.4);
-                    translate([depth-2*wallThickness, yPos2-11.5, 22])
-                        rotate([0, 90, 0])
-                            #cylinder(r=2.5, h=4*wallThickness);
-                    translate([depth-2*wallThickness, yPos2+11.5, 22])
-                        rotate([0, 90, 0])
-                            #cylinder(r=2.5, h=4*wallThickness);
+                    //translate([depth-2*wallThickness, yPos2-11.5, 22])
+                        //rotate([0, 90, 0])
+                            //#cylinder(r=2.5, h=4*wallThickness);
+                    //translate([depth-2*wallThickness, yPos2+11.5, 22])
+                        //rotate([0, 90, 0])
+                            //#cylinder(r=2.5, h=4*wallThickness);
                 }
             }// end union() 2
         }// end difference() 1    
