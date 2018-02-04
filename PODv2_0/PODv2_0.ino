@@ -67,19 +67,19 @@
 
 //The circuit:(ATTENTION max contrast is when VO is ground !)
 
-// * LCD RS pin     to digital pin 7
-// * LCD Enable pin to digital pin 6
-// * LCD D4 pin     to digital pin 5
-// * LCD D5 pin     to digital pin 4
-// * LCD D6 pin     to digital pin 3
-// * LCD D7 pin     to digital pin 2
-// * LCD R/W pin    to ground
-// * LCD VSS pin    to ground
-// * LCD VCC pin    to 5V
+// * LCD RS pin     (LCD pin  4) to Arduino pin 7
+// * LCD Enable pin (LCD pin  6) to Arduino pin 6
+// * LCD D4 pin     (LCD pin 11) to Arduino pin 5
+// * LCD D5 pin     (LCD pin 12) to Arduino pin 4
+// * LCD D6 pin     (LCD pin 13) to Arduino pin 3
+// * LCD D7 pin     (LCD pin 14) to Arduino pin 2
+// * LCD R/W pin    (LCD pin  5) to ground
+// * LCD VSS pin    (LCD pin  1) to ground
+// * LCD VCC pin    (LCD pin  2) to 5V
 //
 // * 10K potentiometer:
 // *   ends to +5V and ground
-// *   wiper to LCD VO pin (pin 3)
+// *   wiper to LCD VO pin (LCD pin 3)
 
 
 // Used MIDI CC for POD v2
