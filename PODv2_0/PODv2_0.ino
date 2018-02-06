@@ -22,7 +22,7 @@
 // Status: 1111nnnn = System Message
 
 
-// MIDI Pin Out
+// MIDI Pinout
 //        ------- 
 //      /    2   \
 //     /  5     4 \
@@ -67,15 +67,22 @@
 
 //The circuit:(ATTENTION max contrast is when VO is ground !)
 
+// * LCD VSS pin    (LCD pin  1) to ground
+// * LCD VCC pin    (LCD pin  2) to 5V
+// * LCD V0 pin     (LCD pin  3) to Potentiometer wiper
 // * LCD RS pin     (LCD pin  4) to Arduino pin 7
+// * LCD R/W pin    (LCD pin  5) to ground
 // * LCD Enable pin (LCD pin  6) to Arduino pin 6
+// * LCD D0 pin     (LCD pin  7) Not Connected
+// * LCD D1 pin     (LCD pin  8) Not Connected
+// * LCD D2 pin     (LCD pin  9) Not Connected
+// * LCD D3 pin     (LCD pin 10) Not Connected
 // * LCD D4 pin     (LCD pin 11) to Arduino pin 5
 // * LCD D5 pin     (LCD pin 12) to Arduino pin 4
 // * LCD D6 pin     (LCD pin 13) to Arduino pin 3
 // * LCD D7 pin     (LCD pin 14) to Arduino pin 2
-// * LCD R/W pin    (LCD pin  5) to ground
-// * LCD VSS pin    (LCD pin  1) to ground
-// * LCD VCC pin    (LCD pin  2) to 5V
+// * LCD A pin      (LCD pin 15) to 5V trough a 220 K resitor
+// * LCD K pin      (LCD pin 16) to ground
 //
 // * 10K potentiometer:
 // *   ends to +5V and ground

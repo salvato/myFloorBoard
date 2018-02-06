@@ -14,8 +14,8 @@ lcdPos = [depth-70, 0.5*(width-100)+15.0, (minH-6.5+sin(slope)*(depth-70))];
 lHeigth = 20;
 
 // Cosa disegnare ?
-center = true;
-left = false;
+center = false;
+left = true;
 right = false;
 
 upper = true;
