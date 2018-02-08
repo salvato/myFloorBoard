@@ -14,8 +14,8 @@ lcdPos = [depth-70, 0.5*(width-100)+15.0, (minH-6.5+sin(slope)*(depth-70))];
 lHeigth = 20;
 
 // Cosa disegnare ?
-center = false;
-left = true;
+center = true;
+left = false;
 right = false;
 
 upper = true;
@@ -163,20 +163,20 @@ LCD() {
     difference() {
         union() {
             color([1, 0, 0])
-                cube([60, 100, 1.5]);//PCB
+                cube([60, 98, 1.6]);//PCB
             color([0, 0, 1])
                 translate([9, 0, 1.5])
-                    cube([42, 100, 8]);//LCD
+                    cube([42, 98, 8]);//LCD
         }
-        diam = 4.0;
+        diam = 3.0;
         offset = 2.5;
         translate([offset, offset, -0.5])
             cylinder(d=diam, h=2.5);
         translate([60-offset, 2, -0.5])
             cylinder(d=diam, h=2.5);
-        translate([offset, 100-offset, -0.5])
+        translate([offset, 98-offset, -0.5])
             cylinder(d=diam, h=2.5);
-        translate([60-offset, 100-offset, -0.5])
+        translate([60-offset, 98-offset, -0.5])
             cylinder(d=diam, h=2.5);
     }
 }
@@ -191,9 +191,9 @@ LCDsupport(heigth) {
                 cylinder(d=6, h=heigth);
             translate([60-offset, offset, -0.5])
                 cylinder(d=6, h=heigth);
-            translate([offset, 100-offset, -0.5])
+            translate([offset, 98-offset, -0.5])
                 cylinder(d=6, h=heigth);
-            translate([60-offset, 100-offset, -0.5])
+            translate([60-offset, 98-offset, -0.5])
                 cylinder(d=6, h=heigth);
         }
         union() {// Fori per viti
@@ -202,9 +202,9 @@ LCDsupport(heigth) {
                 cylinder(d=diam, h=heigth+3);
             translate([60-offset, offset, -1.5])
                 cylinder(d=diam, h=heigth+3);
-            translate([offset, 100-offset, -1.5])
+            translate([offset, 98-offset, -1.5])
                 cylinder(d=diam, h=heigth+3);
-            translate([60-offset, 100-offset, -1.5])
+            translate([60-offset, 98-offset, -1.5])
                 cylinder(d=diam, h=heigth+3);
         }
     }
