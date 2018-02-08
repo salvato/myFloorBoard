@@ -18,8 +18,8 @@ center = true;
 left = false;
 right = false;
 
-upper = true;
-lower = false;
+upper = false;
+lower = true;
 
 //
 // Moduli
