@@ -125,8 +125,6 @@ const uint8_t BankDn = A1;
 const uint8_t WhaVal = A2;
 const uint8_t Volume = A3;
 
-const uint8_t pinLED = 13;
-
 
 ///////////////
 // Miscellanea
@@ -136,11 +134,12 @@ const unsigned long debounceTime = 20; // milliseconds
 unsigned long now;
 
 
-//////////////////
-// Used variables
-//////////////////
+                                              //////////////////
+                                              // Used variables
+                                              //////////////////
 volatile bool bPODready = false;
-int input;                                                 
+int input; 
+                                                
 ////////////////////////////
 // PedalBoard Status Values
 ////////////////////////////
@@ -168,9 +167,9 @@ static InputDebounce buttonWha;
 MIDI_CREATE_DEFAULT_INSTANCE();
 
 
-/////////////////////////
-// Button Event Handlers
-/////////////////////////
+                                              /////////////////////////
+                                              // Button Event Handlers
+                                              /////////////////////////
 void
 BankUp_pressedCallback(uint8_t pinIn) {
     currentBank++;
@@ -182,7 +181,6 @@ BankUp_pressedCallback(uint8_t pinIn) {
 void
 BankUp_releasedCallback(uint8_t pinIn) {
     // handle released state
-    digitalWrite(pinLED, LOW); // turn the LED off
 }
 
 
@@ -241,7 +239,7 @@ WhaSw_pressedCallback(uint8_t pinIn) {
     digitalWrite(WhaSt, statusWhaSt);
 }
 
-
+/*
 void
 WhaSw_releasedCallback(uint8_t pinIn) {
     // handle released state
@@ -258,11 +256,11 @@ void
 WhaSw_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
     // handle released state
 }
+*/
 
-
-////////////////////////
-// MIDI events handlers
-////////////////////////
+                                            ////////////////////////
+                                            // MIDI events handlers
+                                            ////////////////////////
 void
 handleControlChange(byte channel, byte number, byte value) {
     bPODready = true;
@@ -380,56 +378,28 @@ setupPedalBoard() {
     pinMode(Volume, INPUT_PULLUP); // Volume Potentiometer
     pinMode(WhaSt,  OUTPUT);       // Wha Status Led (same pin as the internal Led)
     
-    // setup input buttons (debounced)
+    // debounced buttons setup
     buttonBankUp.setup(BankUp,
                        debounceTime,
                        InputDebounce::PIM_INT_PULL_UP_RES);
                        
     buttonBankDn.setup(BankDn,
                        debounceTime,
-                       InputDebounce::PIM_INT_PULL_UP_RES,
-                       300); // single-shot pressed-on time duration callback
+                       InputDebounce::PIM_INT_PULL_UP_RES);
 
     buttonWha.setup(WhaSw,
                     debounceTime,
                     InputDebounce::PIM_INT_PULL_UP_RES);
     
-    /////////////
-    // examples:
-    /////////////
-    //
-    // buttonA.registerCallbacks(button_pressedCallback,
-    //                           NULL, // button_releasedCallback
-    //                           NULL, // button_pressedDurationCallback
-    //                           button_releasedDurationCallback); // no continuous pressed-on time duration, ...
-    //
-    // buttonA.setup(pinSwitchA);
-    //
-    // buttonA.setup(pinSwitchA, BUTTON_DEBOUNCE_DELAY);
-    //
-    // buttonA.setup(pinSwitchA,
-    //               DEFAULT_INPUT_DEBOUNCE_DELAY,
-    //               InputDebounce::PIM_EXT_PULL_UP_RES); // External Pull Up
-    //
-    // buttonA.setup(pinSwitchA,
-    //               BUTTON_DEBOUNCE_DELAY,
-    //               InputDebounce::PIM_INT_PULL_UP_RES, // Internal Pull Up
-    //               0,
-    //               InputDebounce::ST_NORMALLY_CLOSED); // switch-type normally closed
-
 }
 
 
 void
 setupMIDI() {
     // Setup Various Callbacks
-
-    //MIDI.setHandleNoteOn(handleNoteOn);    // Not used by POD 2.0
-    //MIDI.setHandleNoteOff(handleNoteOff); // Not used by POD 2.0
     MIDI.setHandleControlChange(handleControlChange);
     MIDI.setHandleProgramChange(handleProgramChange);
     MIDI.setHandleSystemExclusive(handleSysEx);
-
     // Start MIDI processing...
     MIDI.begin(podAddress); // Calling MIDI.begin() also activate the Through functionality 
     MIDI.turnThruOff();     // Since we don't want to act as a MIDI Through.
@@ -447,24 +417,28 @@ initPOD() {
         delay(200); // Not too fast please !
         MIDI.read();
     }
+    
+    // Reflect the pedal volume value... 
     statusVolume = (analogRead(Volume) >> 4) << 1; // the analogRead() function takes 100 microseconds
     MIDI.sendControlChange(MIDIvolume, statusVolume, podAddress);
+    
+    // and the status of the Wha pedal
     digitalWrite(WhaSt, statusWhaSt);
     statusWhaVal = (analogRead(WhaVal) >> 4) << 1; // the analogRead() function takes 100 microseconds
     MIDI.sendControlChange(MIDIwhaValue, statusWhaVal, podAddress);
 }
 
 
-/////////
+//////////
 // Setup
-/////////
+//////////
 void 
 setup() {
     setupPedalBoard(); // Configure Input and Output Pins
-    setupLCD(); // Setup LCD and Show the "POD Disconnected" Message
+    setupLCD();        // Setup LCD and Show the "POD Disconnected" Message
     setupMIDI();
-    initPOD(); // Blocks until POD is Ready
-    printLcdHeaders();
+    initPOD();         // Blocks until POD is Ready
+    printLcdHeaders(); // Prepare the fixed headers
 }
 
 
@@ -507,13 +481,13 @@ loop() {
         }
     }
     
-    // Check Banks and Wha Switches
+    // Check the Banks and Wha Switches
     now = millis();
     buttonBankUp.process(now);
     buttonBankDn.process(now);
     buttonWha.process(now);
 
-    // Wha value
+    // Wha pedal value
     if(statusWhaSt == ENABLED) {        
         input = (analogRead(WhaVal) >> 4) << 1; // analogRead() takes 100 microseconds
         if(input != statusWhaVal) {
@@ -522,7 +496,7 @@ loop() {
         }
     }
     
-    // Volume value
+    // Volume pedal value
     input = (analogRead(Volume) >> 4) << 1; // analogRead() takes 100 microseconds
     if(input != statusVolume) {
         statusVolume = input;
