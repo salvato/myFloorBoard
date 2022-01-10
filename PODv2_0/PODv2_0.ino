@@ -177,24 +177,24 @@ BankUp_pressedCallback(uint8_t pinIn) {
     MIDI.sendProgramChange((currentBank<<2)+currentChan+1, podAddress);
 }
 
-/*
-void
-BankUp_releasedCallback(uint8_t pinIn) {
-    // handle released state
-}
+
+//void
+//BankUp_releasedCallback(uint8_t pinIn) {
+//    // handle released state
+//}
 
 
-void
-BankUp_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
-    // handle still pressed state
-}
+//void
+//BankUp_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
+//    // handle still pressed state
+//}
 
 
-void
-BankUp_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
-    // handle released state
-}
-*/
+//void
+//BankUp_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
+//    // handle released state
+//}
+
 
 void
 BankDn_pressedCallback(uint8_t pinIn) {
@@ -204,24 +204,24 @@ BankDn_pressedCallback(uint8_t pinIn) {
     MIDI.sendProgramChange((currentBank<<2)+currentChan+1, podAddress);
 }
 
-/*
-void
-BankDn_releasedCallback(uint8_t pinIn) {
-    // handle released state
-}
+
+//void
+//BankDn_releasedCallback(uint8_t pinIn) {
+//    // handle released state
+//}
 
 
-void
-BankDn_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
-    // handle still pressed state
-}
+//void
+//BankDn_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
+//    // handle still pressed state
+//}
 
 
-void
-BankDn_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
-    // handle released state
-}
-*/
+//void
+//BankDn_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
+//    // handle released state
+//}
+
 
 void
 WhaSw_pressedCallback(uint8_t pinIn) {
@@ -239,24 +239,24 @@ WhaSw_pressedCallback(uint8_t pinIn) {
     digitalWrite(WhaSt, statusWhaSt);
 }
 
-/*
-void
-WhaSw_releasedCallback(uint8_t pinIn) {
-    // handle released state
-}
+
+//void
+//WhaSw_releasedCallback(uint8_t pinIn) {
+//    // handle released state
+//}
 
 
-void
-WhaSw_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
-    // handle still pressed state
-}
+//void
+//WhaSw_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
+//    // handle still pressed state
+//}
 
 
-void
-WhaSw_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
-    // handle released state
-}
-*/
+//void
+//WhaSw_releasedDurationCallback(uint8_t pinIn, unsigned long duration) {
+//    // handle released state
+//}
+
 
                                             ////////////////////////
                                             // MIDI events handlers
