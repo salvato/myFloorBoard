@@ -20,6 +20,8 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
+// Gabriele Salvato (2022)
+
 // Midi Message Format:
 
 // Within the MIDI Specification there are two basic types of message bytes: the STATUS byte and the DATA byte. 
