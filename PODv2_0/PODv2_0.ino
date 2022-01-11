@@ -1,79 +1,82 @@
-//MIT License
+/* MIT License
 
-//Copyright (c) 2018 salvato
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-
-// Gabriele Salvato (2022)
-
-// Midi Message Format:
-
-// Within the MIDI Specification there are two basic types of message bytes: the STATUS byte and the DATA byte. 
-// The Most Significant Bit of a status byte is always 1, the Most Significant Bit of a data byte is always 0. 
-// The maximum length for a standard MIDI message is three bytes but for some types of MIDI message the length
-// can be less.
-
-// There are two different classifications of MIDI messages: MIDI Data Messages and MIDI System Messages.
-// MIDI Data Messages are channel specific, MIDI System Messages are not channel specific.
-
-// Status Byte Format: 1tttnnnn
-// where 1ttt specifies the message type and nnnn specifies the MIDI channel (except for System messages).
-
-// Status: 1000nnnn = Note Off
-// Status: 1001nnnn = Note On
-// Status: 1010nnnn = Polyphonic Aftertouch
-// Status: 1011nnnn = Control Change
-// Status: 1100nnnn = Program Change
-// Status: 1101nnnn = Channel Aftertouch
-// Status: 1110nnnn = Pitch Wheel
-// Status: 1111nnnn = System Message
+Copyright (c) Gabriele Salvato (2022)
 
 
-// MIDI Pinout
-//        ------- 
-//      /    2   \
-//     /  5     4 \
-//     | 3       1 |
-//      \         /
-//       \ __/\__/
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+
+/* Midi Message Format:
+
+Within the MIDI Specification there are two basic types of message bytes: the STATUS byte and the DATA byte.
+The Most Significant Bit of a status byte is always 1, the Most Significant Bit of a data byte is always 0.
+The maximum length for a standard MIDI message is three bytes but for some types of MIDI message the length
+can be less.
+
+There are two different classifications of MIDI messages: MIDI Data Messages and MIDI System Messages.
+MIDI Data Messages are channel specific, MIDI System Messages are not channel specific.
+
+Status Byte Format: 1tttnnnn
+where 1ttt specifies the message type and nnnn specifies the MIDI channel (except for System messages).
+
+Status: 1000nnnn = Note Off
+Status: 1001nnnn = Note On
+Status: 1010nnnn = Polyphonic Aftertouch
+Status: 1011nnnn = Control Change
+Status: 1100nnnn = Program Change
+Status: 1101nnnn = Channel Aftertouch
+Status: 1110nnnn = Pitch Wheel
+Status: 1111nnnn = System Message
+*/
+
+
+/* MIDI Pinout
+        -------
+      /    2   \
+     /  5     4 \
+     | 3       1 |
+      \         /
+       \ __/\__/
         
-// Pin No.  IN Signal name  THRU Signal name  Out Signal name
-// 1        No Connect      No Connect        No Connect
-// 2        No Connect      Shield            Shield
-// 3        No Connect      No Connect        No Connect
-// 4        IN+             +5v               +5v Trough 220 ohm
-// 5        IN-             IN                IN
+ Pin No.  IN Signal name  THRU Signal name  Out Signal name
+ 1        No Connect      No Connect        No Connect
+ 2        No Connect      Shield            Shield
+ 3        No Connect      No Connect        No Connect
+ 4        IN+             +5v               +5v Trough 220 ohm
+ 5        IN-             IN                IN
 
 
-// MIDI standard: 31250 baud, 1 start bit, 8 data, no parity, 1 stop bit. 
-//
-// On the transmit side:
-// the logic-level output from the transmitting device's UART goes to (typically) an open-collector transistor 
-// driver, the other side of the output being a resistor-limited power feed from +Ve in the sending device.
-//
-// On the receive side:
-// an opto-coupler takes in the open-collector drive from the remote device and converts it back to logic level 
-// for the input of the UART.
+ MIDI standard: 31250 baud, 1 start bit, 8 data, no parity, 1 stop bit.
 
-// This scheme ensures that the only 'connection' between the two devices is via the light beams inside the optos 
-// at each receiving end of the link, and eliminates hum-loops which might arise if there were two separate ground
-// connections between the two items of equipment (one for the audio, and one for the comms data).
+ On the transmit side:
+ the logic-level output from the transmitting device's UART goes to (typically) an open-collector transistor
+ driver, the other side of the output being a resistor-limited power feed from +Ve in the sending device.
+
+ On the receive side:
+ an opto-coupler takes in the open-collector drive from the remote device and converts it back to logic level
+ for the input of the UART.
+
+ This scheme ensures that the only 'connection' between the two devices is via the light beams inside the optos
+ at each receiving end of the link, and eliminates hum-loops which might arise if there were two separate ground
+ connections between the two items of equipment (one for the audio, and one for the comms data).
+*/
 
 
 // Serial port communicates on digital pins 0 (RX) and 1 (TX) as well as with the computer via USB. 
@@ -84,13 +87,14 @@
 #include <LiquidCrystal.h>
 #include <InputDebounce.h>
 
+//#define DEBUG 1
 
 #define ENABLED HIGH
 #define DISABLED LOW
 
 
 ///////////////////////////////////////////////////////////////////
-// LCD connections: (ATTENTION max contrast is when VO is ground !)
+// LCD connections: (Note: max contrast is when V0 is ground !)
 ///////////////////////////////////////////////////////////////////
 
 // * LCD VSS pin    (LCD pin  1) to ground
@@ -155,14 +159,18 @@ const uint8_t Volume = A3;
 ///////////////
 const byte podAddress = 1; // This is the MIDI address #1 (the POD default)
 const unsigned long debounceTime = 20; // milliseconds
-unsigned long now;
+int pressedDuration = 1000; // in milliseconds
+const int pressedRepetition = 300; // in milliseconds
+int pressedInterval;
 
 
-                          //////////////////
+
+                          ////////////ll//////
                           // Used variables
                           //////////////////
 volatile bool bPODready = false;
-int input; 
+unsigned long now;
+int input;
                                                 
 ////////////////////////////
 // PedalBoard Status Values
@@ -194,24 +202,43 @@ MIDI_CREATE_DEFAULT_INSTANCE();
                           /////////////////////////
                           // Button Event Handlers
                           /////////////////////////
+
+
 void
 BankUp_pressedCallback(uint8_t pinIn) {
+    pressedInterval = pressedDuration;
+#ifdef DEBUG
+    digitalWrite(WhaSt, HIGH);
+#else
     currentBank++;
     if(currentBank > 8) currentBank = 0;
     MIDI.sendProgramChange((currentBank<<2)+currentChan+1, podAddress);
+#endif
 }
 
 
-//void
-//BankUp_releasedCallback(uint8_t pinIn) {
-//    // handle released state
-//}
+void
+BankUp_releasedCallback(uint8_t pinIn) {
+#ifdef DEBUG
+    digitalWrite(WhaSt, LOW);
+#else
+#endif
+}
 
 
-//void
-//BankUp_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
-//    // handle still pressed state
-//}
+void
+BankUp_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
+    if(duration > pressedInterval) {
+        #ifdef DEBUG
+            digitalWrite(WhaSt, !digitalRead(WhaSt));
+        #else
+          currentBank++;
+          if(currentBank > 8) currentBank = 0;
+          MIDI.sendProgramChange((currentBank<<2)+currentChan+1, podAddress);
+        #endif
+        pressedInterval += pressedRepetition;
+    }
+}
 
 
 //void
@@ -222,23 +249,41 @@ BankUp_pressedCallback(uint8_t pinIn) {
 
 void
 BankDn_pressedCallback(uint8_t pinIn) {
+    pressedInterval = pressedDuration;
+#ifdef DEBUG
+    digitalWrite(WhaSt, HIGH);
+#else
     currentBank--;
     if(currentBank < 0)
         currentBank = 8;
     MIDI.sendProgramChange((currentBank<<2)+currentChan+1, podAddress);
+#endif
 }
 
 
-//void
-//BankDn_releasedCallback(uint8_t pinIn) {
-//    // handle released state
-//}
+void
+BankDn_releasedCallback(uint8_t pinIn) {
+#ifdef DEBUG
+    digitalWrite(WhaSt, LOW);
+#else
+#endif
+}
 
 
-//void
-//BankDn_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
-//    // handle still pressed state
-//}
+void
+BankDn_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
+    if(duration > pressedInterval) {
+        #ifdef DEBUG
+            digitalWrite(WhaSt, !digitalRead(WhaSt));
+        #else
+          currentBank--;
+          if(currentBank < 0)
+              currentBank = 8;
+          MIDI.sendProgramChange((currentBank<<2)+currentChan+1, podAddress);
+        #endif
+        pressedInterval += pressedRepetition;
+    }
+}
 
 
 //void
@@ -285,6 +330,8 @@ WhaSw_pressedCallback(uint8_t pinIn) {
                     ////////////////////////
                     // MIDI events handlers
                     ////////////////////////
+
+
 void
 handleControlChange(byte channel, byte number, byte value) {
     bPODready = true;
@@ -379,19 +426,19 @@ void
 setupPedalBoard() {
     // Register callback functions (shared, used by all buttons)
     buttonBankUp.registerCallbacks(BankUp_pressedCallback,
-                                   NULL,
-                                   NULL,
-                                   NULL);
+                                   BankUp_releasedCallback,
+                                   BankUp_pressedDurationCallback,
+                                   NULL); // BankUp_releasedDurationCallback);
                                    
     buttonBankDn.registerCallbacks(BankDn_pressedCallback,
-                                   NULL,
-                                   NULL,
-                                   NULL);
+                                   BankDn_releasedCallback,
+                                   BankDn_pressedDurationCallback,
+                                   NULL); // BankDn_releasedDurationCallback);
 
     buttonWha.registerCallbacks(WhaSw_pressedCallback,
-                                NULL,
-                                NULL,
-                                NULL);
+                                NULL,  // WhaSw_releasedCallback,
+                                NULL,  // WhaSw_pressedDurationCallback,
+                                NULL); // WhaSw_releasedDurationCallback);
                                    
     // There are 20K pullup resistors built into the Atmega chip...
     pinMode(ChanA,  INPUT_PULLUP); // Channel A  Switch
@@ -400,6 +447,7 @@ setupPedalBoard() {
     pinMode(ChanD,  INPUT_PULLUP); // Channel D  Switch
     pinMode(WhaVal, INPUT_PULLUP); // Wha Potentiometer
     pinMode(Volume, INPUT_PULLUP); // Volume Potentiometer
+
     pinMode(WhaSt,  OUTPUT);       // Wha Status Led (same pin as the internal Led)
     
     // debounced buttons setup
@@ -437,6 +485,7 @@ setupMIDI() {
 ///////////////////////////////////////////
 void
 initPOD() {
+#ifndef DEBUG
     while(!bPODready) {
         delay(200); // Not too fast please !
         MIDI.read();
@@ -450,6 +499,7 @@ initPOD() {
     digitalWrite(WhaSt, statusWhaSt);
     statusWhaVal = (analogRead(WhaVal) >> 4) << 1; // the analogRead() function takes 100 microseconds
     MIDI.sendControlChange(MIDIwhaValue, statusWhaVal, podAddress);
+#endif
 }
 
 
