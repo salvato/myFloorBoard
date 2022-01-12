@@ -160,7 +160,7 @@ const uint8_t Volume = A3;
 const byte podAddress            = 1; // This is the MIDI address #1 (the POD default)
 const unsigned long debounceTime = 20; // milliseconds
 int pressedDuration              = 1000; // in milliseconds
-const int pressedRepetition      = 300; // in milliseconds
+const int pressedRepetition      = 500; // in milliseconds
 int pressedInterval              = pressedDuration;
 
 
