@@ -159,19 +159,19 @@ const uint8_t Volume = A3;
 ///////////////
 const byte podAddress            = 1; // This is the MIDI address #1 (the POD default)
 const unsigned long debounceTime = 20; // milliseconds
-int pressedDuration              = 1000; // in milliseconds
+const int pressedDuration        = 1000; // in milliseconds
 const int pressedRepetition      = 500; // in milliseconds
-int pressedInterval              = pressedDuration;
 
 
 
-                          ////////////ll//////
-                          // Used variables
-                          //////////////////
+//////////////////
+// Used variables
+//////////////////
 volatile bool bPODready = false;
 unsigned long now;
 int input;
-                                                
+int pressedInterval = pressedDuration;
+
 ////////////////////////////
 // PedalBoard Status Values
 ////////////////////////////
@@ -199,9 +199,9 @@ static InputDebounce buttonWha;
 MIDI_CREATE_DEFAULT_INSTANCE();
 
 
-                          /////////////////////////
-                          // Button Event Handlers
-                          /////////////////////////
+/////////////////////////
+// Button Event Handlers
+/////////////////////////
 
 
 void
@@ -327,9 +327,9 @@ WhaSw_pressedCallback(uint8_t pinIn) {
 //}
 
 
-                    ////////////////////////
-                    // MIDI events handlers
-                    ////////////////////////
+////////////////////////
+// MIDI events handlers
+////////////////////////
 
 
 void
