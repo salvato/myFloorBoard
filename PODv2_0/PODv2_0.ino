@@ -139,6 +139,13 @@ const uint8_t d6 = 3;
 const uint8_t d7 = 2;
 
 
+////////////////////////////////////////
+// MIDI interface and Arduino pin number
+////////////////////////////////////////
+// MIDI_Out = 1; // UART-Tx 
+// MIDI_In  = 0; // UART-Rx 
+
+
 /////////////////////////////
 // PedalBoard - Arduino pins
 /////////////////////////////
@@ -148,10 +155,17 @@ const uint8_t ChanC  = 10;
 const uint8_t ChanD  = 11;
 const uint8_t WhaSw  = 12; // Wha On-Off
 const uint8_t WhaSt  = 13; // Wha Status Led
-const uint8_t BankUp = A0;
-const uint8_t BankDn = A1;
-const uint8_t WhaVal = A2;
-const uint8_t Volume = A3;
+#ifdef ESP_PLATFORM
+  const uint8_t BankUp = 14;
+  const uint8_t BankDn = 15;
+  const uint8_t WhaVal = 16;
+  const uint8_t Volume = 17;
+#else
+  const uint8_t BankUp = A0;
+  const uint8_t BankDn = A1;
+  const uint8_t WhaVal = A2;
+  const uint8_t Volume = A3;
+#endif
 
 
 ///////////////
