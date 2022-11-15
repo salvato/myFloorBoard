@@ -184,9 +184,9 @@ int statusBankDn = HIGH;
 int statusWhaSw  = LOW; // Wha On-Off (started LOW and so it is not triggered if the pedal is already pushed)
 int statusWhaSt  = DISABLED;
 int statusWhaVal = 0;
-int statusVolume = 0;
-int currentBank  = 0; // from 0 to 8 corresponding to POD 1 to 9
-int currentChan  = 0; // from 0 to 3 corresponding to POD A to D
+int statusVolume = 255; // Volume at maximum (just in case no pedal is connected)
+int currentBank  = 0;   // from 0 to 8 corresponding to POD 1 to 9
+int currentChan  = 0;   // from 0 to 3 corresponding to POD A to D
 
 
 ////////////////////////////
@@ -294,6 +294,7 @@ BankDn_pressedDurationCallback(uint8_t pinIn, unsigned long duration) {
 
 void
 WhaSw_pressedCallback(uint8_t pinIn) {
+/*
     LCD.setCursor(17, 0);
     if(statusWhaSt == ENABLED) { // Toggle the wha status
         statusWhaSt = DISABLED;
@@ -306,6 +307,7 @@ WhaSw_pressedCallback(uint8_t pinIn) {
         LCD.print("Wha");
     }
     digitalWrite(WhaSt, statusWhaSt);
+*/
 }
 
 
@@ -492,13 +494,13 @@ initPOD() {
     }
     
     // Reflect the pedal volume value... 
-    statusVolume = (analogRead(Volume) >> 4) << 1; // the analogRead() function takes 100 microseconds
+    //statusVolume = (analogRead(Volume) >> 4) << 1; // the analogRead() function takes 100 microseconds
     MIDI.sendControlChange(MIDIvolume, statusVolume, podAddress);
     
     // and the status of the Wha pedal
-    digitalWrite(WhaSt, statusWhaSt);
-    statusWhaVal = (analogRead(WhaVal) >> 4) << 1; // the analogRead() function takes 100 microseconds
-    MIDI.sendControlChange(MIDIwhaValue, statusWhaVal, podAddress);
+    //digitalWrite(WhaSt, statusWhaSt);
+    //statusWhaVal = (analogRead(WhaVal) >> 4) << 1; // the analogRead() function takes 100 microseconds
+    //MIDI.sendControlChange(MIDIwhaValue, statusWhaVal, podAddress);
 #endif
 }
 
@@ -559,8 +561,11 @@ loop() {
     now = millis();
     buttonBankUp.process(now);
     buttonBankDn.process(now);
-    buttonWha.process(now);
 
+/* Better to remove the Wha and Volume until the two pedals are connected
+ *  
+    buttonWha.process(now);
+    
     // Wha pedal value
     if(statusWhaSt == ENABLED) {        
         input = (analogRead(WhaVal) >> 4) << 1; // analogRead() takes 100 microseconds
@@ -576,6 +581,8 @@ loop() {
         statusVolume = input;
         MIDI.sendControlChange(MIDIvolume, statusVolume, podAddress);
     }
+ * Removed Wha and Volume until the pedals are connected
+ */
 
     // Call MIDI.read() as fast as possible for real-time performance.
     MIDI.read();
